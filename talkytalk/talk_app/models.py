@@ -6,7 +6,7 @@ class Room(models.Model):
     ROOM_STATUS = (
         (1, 'open'),
         (2, 'on_call'),
-        (2, 'closed'),
+        (3, 'closed'),
     )
     callee = models.ForeignKey(User, related_name='rooms', on_delete=models.CASCADE)
     participants = models.ManyToManyField(User)
