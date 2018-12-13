@@ -32,3 +32,13 @@ class JoinRoom(generics.CreateAPIView):
         serializer = self.serializer_class(room)
         return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
 
+
+class ListCreateContact(generics.ListCreateAPIView):
+    serializer_class = serializers.ContactSerializer
+
+    def get_queryset(self):
+        return models.Contact.objects.filter(owner=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+

@@ -34,3 +34,4 @@ class ContactSerializer(serializers.ModelSerializer):
             'created',
         )
         model = models.Contact
+
