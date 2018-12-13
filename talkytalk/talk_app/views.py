@@ -49,3 +49,11 @@ class ListCreateContact(generics.ListCreateAPIView):
         # save the contact with owner of the user
         serializer.save(owner=self.request.user)
 
+
+class RetrieveUpdateDestroyContact(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = serializers.ContactSerializer
+    queryset = models.Contact.objects.all()
+
+    def get_object(self):
+        return get_object_or_404(self.queryset, id=self.kwargs.get('pk'), owner=self.request.user)
+
