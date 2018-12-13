@@ -5,6 +5,7 @@ from . import models
 class RoomSerializer(serializers.ModelSerializer):
     class Meta:
         fields = (
+            'id',
             'callee',
             'participants',
             'created',
@@ -12,6 +13,14 @@ class RoomSerializer(serializers.ModelSerializer):
             'room_id',
         )
         model = models.Room
+
+    def create(self, validated_data):
+        room = models.Room.objects.create(
+            callee=self.context['request'].user,
+            room_id=validated_data.get('room_id'),
+        )
+        room.participants.add(self.context['request'].user.id)
+        return room
 
 
 class ContactSerializer(serializers.ModelSerializer):

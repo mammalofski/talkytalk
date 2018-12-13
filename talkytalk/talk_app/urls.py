@@ -3,4 +3,6 @@ from . import views
 
 urlpatterns = [
     path('room/', views.ListCreateRoom.as_view(), name='list_room'),
+    path('room/<int:pk>', views.RetrieveUpdateDestroyRoom.as_view(), name='room_detail'),
+    path('room/join', views.JoinRoom.as_view(), name='join_room'),
 ]
