@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'talk_app',
+    'django_eventstream'
 ]
 
 MIDDLEWARE = [
@@ -49,6 +50,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_grip.GripMiddleware'
 ]
 
 ROOT_URLCONF = 'talkytalk.urls'
@@ -144,3 +146,8 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',
     ),
 }
+
+
+GRIP_URL = 'http://127.0.0.1:5561'
+# GRIP_URL = 'http://api.fanout.io/realm/your-realm?iss=e85043bf&key=9Vni/d2qFsG4HxmvetmMHA=='
+EVENTSTREAM_STORAGE_CLASS = 'django_eventstream.storage.DjangoModelStorage'
