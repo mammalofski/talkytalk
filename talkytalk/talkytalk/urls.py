@@ -16,10 +16,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from . import views
+import django_eventstream
 
 urlpatterns = [
-    path('', views.Index.as_view()),
+    path('', views.index_render),
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    path('api/', include(('talk_app.urls', 'talk_app'), namespace='talk_app'))
+    path('api/', include(('talk_app.urls', 'talk_app'), namespace='talk_app')),
+    path('events/', include(django_eventstream.urls), {'channels': ['testChannel']}),
+    path('start-stream/', views.start_stream)
 ]
