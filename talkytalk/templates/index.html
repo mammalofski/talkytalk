@@ -19,19 +19,5 @@ this is our perfect view
         // ... client fell behind, reinitialize ...
         console.log(e)
     }, false);
-
-
-    var csrf_val = document.cookie.split('csrftoken=')[1];
-    $.ajax({method:'GET', url:'/events/',
-        headers: {'X-CSRFToken': csrf_val},
-        success: function (data) {
-            console.log(data)
-        },
-        error: function (err) {
-            console.log(err)
-        }
-    });
-
-
 </script>
 </html>
