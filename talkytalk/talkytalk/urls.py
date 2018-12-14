@@ -24,5 +24,4 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('api/', include(('talk_app.urls', 'talk_app'), namespace='talk_app')),
     path('events/', include(django_eventstream.urls), {'channels': ['testChannel']}),
-    path('start-stream/', views.start_stream)
 ]

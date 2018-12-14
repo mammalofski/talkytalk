@@ -175,13 +175,11 @@ GRIP_URL = 'http://127.0.0.1:5561'
 EVENTSTREAM_STORAGE_CLASS = 'django_eventstream.storage.DjangoModelStorage'
 
 ASGI_APPLICATION = 'talkytalk.routing.application'
-
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'asgi_redis.RedisChannelLayer',
         'CONFIG': {
             'hosts': [('localhost', 6379)],
         },
-        'ROUTING': 'chantest.routing.channel_routing',
     }
 }
