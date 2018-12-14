@@ -3,11 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>talky talk</title>
-    <link rel="stylesheet" type="text/css" href="/static/bower_components/bootstrap/dist/css/bootstrap.min.css"/>
-    <script src="/static/bower_components/jquery/dist/jquery.min.js"></script>
-    <script src="/static/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-    <script src="/static/js/eventsource.min.js"></script>
-    <script src="/static/js/reconnecting-eventsource.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 </head>
 <body>
 this is our perfect view
@@ -23,19 +19,5 @@ this is our perfect view
         // ... client fell behind, reinitialize ...
         console.log(e)
     }, false);
-
-
-    var csrf_val = document.cookie.split('csrftoken=')[1];
-    $.ajax({method:'GET', url:'/events/',
-        headers: {'X-CSRFToken': csrf_val},
-        success: function (data) {
-            console.log(data)
-        },
-        error: function (err) {
-            console.log(err)
-        }
-    });
-
-
 </script>
 </html>
