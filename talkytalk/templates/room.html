@@ -8,18 +8,6 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
 <body>
-this is our perfect view
+    Rooms...
 </body>
-<script>
-    var es = new EventSource('/events/');
-
-    es.addEventListener('message', function (e) {
-        console.log(e.data);
-    }, false);
-
-    es.addEventListener('stream-reset', function (e) {
-        // ... client fell behind, reinitialize ...
-        console.log(e)
-    }, false);
-</script>
 </html>
