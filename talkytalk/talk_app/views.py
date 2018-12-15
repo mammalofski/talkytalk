@@ -10,7 +10,7 @@ from . import serializers
 
 class ListCreateRoom(generics.ListCreateAPIView):
     serializer_class = serializers.RoomSerializer
-    permission_classes = (AllowAny,)
+    permission_classes = (AllowAny,)  # TODO: replace this line later
 
     def get_queryset(self):
         # return models.Room.objects.filter(callee=self.request.user)  # TODO: replace this line later
@@ -42,12 +42,14 @@ class RetrieveUpdateDestroyRoom(generics.RetrieveUpdateDestroyAPIView):
 class JoinRoom(generics.CreateAPIView):
     serializer_class = serializers.RoomSerializer
     queryset = models.Room.objects.all()
+    permission_classes = (AllowAny,)  # TODO: replace this line later
 
     def create(self, request, *args, **kwargs):
         # get the room
         room = get_object_or_404(models.Room, room_id=request.data.get('room_id'))
         # add user to room participants
-        room.participants.add(request.user.id)
+        # room.participants.add(request.user.id)
+        room.participants.add(2)  # TODO: replace this line later
         # change room status to "on_call"
         room.status = 2
         room.save()

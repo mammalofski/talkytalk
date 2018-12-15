@@ -45,9 +45,13 @@
                 <div class="panel-body">
                     <div class="input-group">
                             <span class="input-group-btn">
-                            <button class="btn btn-default" type="button">Join Room!</button>
+                            <button class="btn btn-default"
+                                    onclick="joinRoom()"
+                                    type="button">Join Room!</button>
                             </span>
-                        <input type="text" class="form-control" placeholder="Room ID">
+                        <input type="text"
+                               id="join-room-input"
+                               class="form-control" placeholder="Room ID">
                     </div><!-- /input-group -->
                 </div>
 
@@ -98,11 +102,33 @@
         }
     });
 
-    let createRoom = () => {
+    const createRoom = () => {
         const value = document.getElementById("create-room-input").value;
         console.log(value);
         $.ajax({
             url: "http://127.0.0.1:8001/api/room/",
+            headers: {"X-CSRFToken": csrf_val},
+            data: {
+                'room_id': value,
+            },
+            type: "POST",
+            success: function (data, textStatus, jqXHR) {
+                // const rooms = data;
+                console.log(data);
+                // generate rooms elements
+
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log('error')
+            }
+        });
+    };
+
+    const joinRoom = () => {
+        const value = document.getElementById("join-room-input").value;
+        console.log(value);
+        $.ajax({
+            url: "http://127.0.0.1:8001/api/room/join",
             headers: {"X-CSRFToken": csrf_val},
             data: {
                 'room_id': value,
