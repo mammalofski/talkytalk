@@ -23,7 +23,7 @@ from allauth.account.views import confirm_email
 import talk_app.views as talkAppViews
 
 urlpatterns = [
-    path('myauth/', TemplateView.as_view(template_name='auth.html')),
+    path('userAuth/', TemplateView.as_view(template_name='auth.html')),
     path('contacts/', TemplateView.as_view(template_name='contacts.html')),
     path('rooms/', TemplateView.as_view(template_name='room.html')),
     path('admin/', admin.site.urls),

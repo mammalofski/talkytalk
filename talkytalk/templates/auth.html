@@ -47,6 +47,7 @@
 </body>
 <script>
     var csrf_val = document.cookie.split('csrftoken=')[1];
+
     var registerFunc = function () {
         var email = $('#register_email').val();
         var password1 = $('#register_pass_1').val();
@@ -76,13 +77,15 @@
             'email': email,
             'password': password,
         };
-        console.log(request_data);
         var ajax_req;
-         ajax_req = $.ajax({
+        ajax_req = $.ajax({
             url: '/rest-auth/login/', type: 'POST', data: request_data,
             headers: {'X-CSRFToken': csrf_val},
             success: function (data) {
-                $.cookie("userToken", data.key);
+                var date = new Date();
+                var minutes = 3000;
+                date.setTime(date.getTime() + (minutes * 60 * 1000));
+                $.cookie("userToken", data.key, { expires: date , path:'/'});
             }, error: function (err) {
                 $('#login_error')[0].innerText = "ERROR In Login...";
             }
