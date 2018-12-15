@@ -5,11 +5,6 @@ from threading import Thread
 from time import sleep
 
 
-
-def index_render(request):
-    return render(request, 'index.html')
-
-
 def threaded_function(arg):
     for i in range(arg):
         send_event('test', 'message', {'text': 'hello world'})
