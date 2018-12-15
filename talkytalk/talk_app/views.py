@@ -72,13 +72,27 @@ class JoinRoom(generics.CreateAPIView):
 
 class ListCreateContact(generics.ListCreateAPIView):
     serializer_class = serializers.ContactSerializer
+    permission_classes = (AllowAny,)  # TODO: replace this line later
 
     def get_queryset(self):
-        return models.Contact.objects.filter(owner=self.request.user)
+        # return models.Contact.objects.filter(owner=self.request.user)  # TODO: replace this line later
+        return models.Contact.objects.all()
 
-    def perform_create(self, serializer):
-        # save the contact with owner of the user
-        serializer.save(owner=self.request.user)
+    # def perform_create(self, serializer):
+    #     # save the contact with owner of the user
+    #     # serializer.save(owner=self.request.user)  # TODO: replace this line later
+    #     serializer.save(owner=models.TalkyTalkUser.objects.get(id=1))
+
+    def create(self, request, *args, **kwargs):
+        user = get_object_or_404(models.TalkyTalkUser, email=request.data.get('contact'))
+        contact = models.Contact.objects.create(
+            contact=user,
+            owner=request.user,
+            contact_name=request.data.get('contact_name'),
+            detail=request.data.get('detail'),
+        )
+        serializer = self.serializer_class(contact)
+        return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
 
 
 class RetrieveUpdateDestroyContact(generics.RetrieveUpdateDestroyAPIView):

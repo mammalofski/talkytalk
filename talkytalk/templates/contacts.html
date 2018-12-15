@@ -2,60 +2,149 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Contacts</title>
+    <title>talky talk</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+    <style>
+        .table {
+            text-align: center;
+        }
+
+        .table th {
+            text-align: center;
+        }
+
+        .btn {
+            transition: all 0.5s;
+        }
+    </style>
+
 </head>
 <body>
 <div class="container">
-    <div class="row">
-        <div class="col-md-1"></div>
-        <div class="col-md-10">
-            <button> + Add Contact</button>
+    <div class="row" style="margin-top: 100px">
+        <div class="col-md-10 col-md-offset-1">
 
+            <div class="panel panel-primary">
+                <!-- Default panel contents -->
+                <div class="panel-heading">Create Contact</div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-8 col-md-offset-2">
+                            <form class="form-horizontal">
+                                <div class="form-group">
+                                    <label class="control-label col-sm-2" for="email">Email:</label>
+                                    <div class="col-sm-10">
+                                        <input type="email" class="form-control" id="email" placeholder="Enter email"
+                                               name="email">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-sm-2" for="name">Name:</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" id="name"
+                                               placeholder="Enter Name" name="name">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-sm-2" for="detail">Detail:</label>
+                                    <div class="col-sm-10">
+                                        <textarea class="form-control" id="detail"
+                                                  placeholder="Enter some Details" name="detail"></textarea>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-sm-offset-2 col-sm-10">
+                                        <button type="submit" id="submitContact" class="btn btn-default">Submit</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
 
-            <table>
-                <tr>
-                    <th style="width: 50px">ID</th>
-                    <th style="width: 300px">Name</th>
-                    <th style="width: 100px">Email</th>
-                </tr>
-                <tr>
-                    <td>1</td>
-                    <td>Maria Anders</td>
-                    <td>a@a.com</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>Francisco Chang</td>
-                    <td>a@a.com</td>
-                </tr>
-                <tr>
-                    <td>3</td>
-                    <td>Roland Mendel</td>
-                    <td>a@a.com</td>
-                </tr>
-                <tr>
-                    <td>4</td>
-                    <td>Helen Bennett</td>
-                    <td>a@a.com</td>
-                </tr>
-                <tr>
-                    <td>5</td>
-                    <td>Yoshi Tannamuri</td>
-                    <td>a@a.com</td>
-                </tr>
-                <tr>
-                    <td>6</td>
-                    <td>Giovanni Rovelli</td>
-                    <td>a@a.com</td>
-                </tr>
-            </table>
+            </div>
+
         </div>
-        <div class="col-md-1"></div>
+
     </div>
+    <div class="row">
+        <div class="col-md-offset-1 col-md-10">
+            <div class="panel panel-primary">
+                <!-- Default panel contents -->
+                <div class="panel-heading">Contacts</div>
+                <table class="table table-hover table-bordered">
+                    <thead>
+                    <tr>
+                        <th>name</th>
+                        <th>contact</th>
+                    </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
 </div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
 </body>
+<script>
+    const csrf_val = document.cookie.split("csrftoken=")[1];
+    console.log($.cookie("userToken"));
+
+    $.ajax({
+        url: "/api/contact",
+        headers: {"X-CSRFToken": csrf_val},
+        type: "GET",
+        success: function (data, textStatus, jqXHR) {
+            // generate rooms elements
+            data.map((contact) =>
+                $('tbody')[0].innerHTML += `<tr><td>${contact.name}</td><td>${contact.contact}</td></tr>`
+            )
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.log('error')
+        }
+    });
+
+    const submitContact = () => {
+        console.log('in submit contact req');
+        const email = $('#email').val();
+        const name = $('#name').val();
+        const detail = $('#detail').val();
+
+        $.ajax({
+            url: "/api/contact",
+            headers: {"X-CSRFToken": csrf_val},
+            type: "POST",
+            data: {
+                'contact': email,
+                'contact_name': name,
+                'detail': detail,
+            },
+            success: function (data, textStatus, jqXHR) {
+                // generate rooms elements
+                console.log(data);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log('error')
+            }
+        });
+
+
+    };
+
+    $('#submitContact').click((e) => {
+        e.preventDefault();
+        submitContact();
+    })
+
+
+</script>
 </html>
+
