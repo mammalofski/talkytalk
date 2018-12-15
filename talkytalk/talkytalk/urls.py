@@ -23,14 +23,15 @@ from allauth.account.views import confirm_email
 import talk_app.views as talkAppViews
 
 urlpatterns = [
-    path('auth/', TemplateView.as_view(template_name='auth.html')),
+    path('myauth/', TemplateView.as_view(template_name='auth.html')),
     path('contacts/', TemplateView.as_view(template_name='contacts.html')),
     path('rooms/', TemplateView.as_view(template_name='room.html')),
     path('admin/', admin.site.urls),
     path('api/', include(('talk_app.urls', 'talk_app'), namespace='talk_app')),
     path('events/', include(django_eventstream.urls), {'channels': ['testChannel']}),
     # REST AUTH
-    path('rest-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path('rest-auth/', include('rest_auth.urls')),
     path('rest-auth/registration/', include('rest_auth.registration.urls')),
     re_path('account-confirm-email/', VerifyEmailView.as_view(),
             name='account_email_verification_sent'),
