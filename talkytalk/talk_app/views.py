@@ -7,6 +7,13 @@ from . import models
 from . import serializers
 
 
+def confirm_password_reset(request, first_token, password_reset_token):
+    return redirect("/auth/#/resetPasswordConfirm/" + first_token + "/" + password_reset_token)
+
+
+def confirm_email(request, key):
+    return redirect("/auth/#/verifyEmail/" + key)
+
 class ListCreateRoom(generics.ListCreateAPIView):
     serializer_class = serializers.RoomSerializer
 

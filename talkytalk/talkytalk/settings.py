@@ -36,10 +36,18 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',
+    'rest_auth',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'rest_auth.registration',
     'talk_app',
     'channels',
     'django_eventstream'
 ]
+
+SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -133,7 +141,6 @@ STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 STATIC_BASE_DIR = os.path.dirname((os.path.dirname(os.path.abspath(__file__))))
 
-
 STATICFILES_DIRS = [
     os.path.join(STATIC_BASE_DIR, "static"),
 ]
@@ -151,6 +158,31 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.JSONRenderer',
     ],
 }
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.RemoteUserBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+REST_AUTH_SERIALIZERS = {
+    'USER_DETAILS_SERIALIZER': 'talk_app.serializers.UserSerializer',
+    'PASSWORD_RESET_CONFIRM_SERIALIZER':
+        'talk_app.serializers.CustomPasswordResetConfirmSerializer',
+    'PASSWORD_CHANGE_SERIALIZER': 'talk_app.serializers.CustomPasswordChangeSerializer',
+}
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_VERIFICATION = "none"
+OLD_PASSWORD_FIELD_ENABLED = True
+ACCOUNT_EMAIL_SUBJECT_PREFIX = ""
+
+AUTH_USER_MODEL = 'talk_app.TalkyTalkUser'
 
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
