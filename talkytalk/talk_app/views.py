@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import  AllowAny
 
 from . import models
 from . import serializers
@@ -16,9 +17,30 @@ def confirm_email(request, key):
 
 class ListCreateRoom(generics.ListCreateAPIView):
     serializer_class = serializers.RoomSerializer
+    permission_classes = (AllowAny,)  # TODO: replace this line later
 
     def get_queryset(self):
-        return models.Room.objects.filter(callee=self.request.user)
+        # return models.Room.objects.filter(callee=self.request.user)  # TODO: replace this line later
+        return models.Room.objects.all()
+
+    def create(self, request, *args, **kwargs):
+        print('in room creation')
+
+        # if models.Room.objects.filter(room_id=request.data.get('room_id'), callee=request.user).exists():  # TODO: replace this line later
+        if models.Room.objects.filter(room_id=request.data.get('room_id')).exists():
+            return Response('room with this id already exists', status=status.HTTP_406_NOT_ACCEPTABLE)
+
+        # create the room
+        room = models.Room.objects.create(
+            # callee=self.context['request'].user,
+            callee=models.User.objects.get(id=1),  # TODO: replace this line later
+            room_id=request.data.get('room_id'),
+        )
+        # then add the callee himself/herself to participants
+        # room.participants.add(self.context['request'].user.id)
+        room.participants.add(1)  # TODO: replace this line later
+        serializer = self.serializer_class(room)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class RetrieveUpdateDestroyRoom(generics.RetrieveUpdateDestroyAPIView):
@@ -32,12 +54,14 @@ class RetrieveUpdateDestroyRoom(generics.RetrieveUpdateDestroyAPIView):
 class JoinRoom(generics.CreateAPIView):
     serializer_class = serializers.RoomSerializer
     queryset = models.Room.objects.all()
+    permission_classes = (AllowAny,)  # TODO: replace this line later
 
     def create(self, request, *args, **kwargs):
         # get the room
         room = get_object_or_404(models.Room, room_id=request.data.get('room_id'))
         # add user to room participants
-        room.participants.add(request.user.id)
+        # room.participants.add(request.user.id)
+        room.participants.add(2)  # TODO: replace this line later
         # change room status to "on_call"
         room.status = 2
         room.save()
