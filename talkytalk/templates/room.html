@@ -4,6 +4,15 @@
     <meta charset="UTF-8">
     <title>talky talk</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <style>
+        .table {
+            text-align: center;
+        }
+
+        .table th {
+            text-align: center;
+        }
+    </style>
 
 </head>
 <body>
@@ -49,10 +58,14 @@
             <div class="panel panel-default">
                 <!-- Default panel contents -->
                 <div class="panel-heading">Panel heading</div>
-                <table class="table">
-                    <tbody>
-
-                    </tbody>
+                <table class="table table-hover table-bordered">
+                    <thead>
+                        <tr>
+                            <th>room id</th>
+                            <th>room status</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
                 </table>
             </div>
 
@@ -66,29 +79,24 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </body>
 <script>
+    const csrf_val = document.cookie.split("csrftoken=")[1];
+    $.ajax({
+        url: "http://127.0.0.1:8001/api/room/",
+        headers: {"X-CSRFToken": csrf_val},
+        type: "GET",
+        success: function (data, textStatus, jqXHR) {
+            // const rooms = data;
+            console.log(data);
+            // generate rooms elements
+            data.map((room) =>
+                $('tbody')[0].innerHTML += `<tr><td>${room.room_id}</td><td>${room.status}</td></tr>`
+            )
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.log('error')
+        }
+    });
 
-    let rooms = [
-        {
-            name: "first room",
-        },
-        {
-            name: "second room",
-        },
-        {
-            name: "ajagh vajagh",
-        },
-        {
-            name: "chetori",
-        },
-        {
-            name: "bepach",
-        },
-    ];
-
-    // generate rooms elements
-    rooms.map((room) =>
-        $('tbody')[0].innerHTML += `<tr"><td>${room.name}</td></tr>`
-    )
 </script>
 </html>
 

@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import  AllowAny
 
 from . import models
 from . import serializers
@@ -9,9 +10,11 @@ from . import serializers
 
 class ListCreateRoom(generics.ListCreateAPIView):
     serializer_class = serializers.RoomSerializer
+    permission_classes = (AllowAny,)
 
     def get_queryset(self):
-        return models.Room.objects.filter(callee=self.request.user)
+        # return models.Room.objects.filter(callee=self.request.user)
+        return models.Room.objects.all()
 
 
 class RetrieveUpdateDestroyRoom(generics.RetrieveUpdateDestroyAPIView):
