@@ -4,10 +4,91 @@
     <meta charset="UTF-8">
     <title>talky talk</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
 </head>
 <body>
-    Rooms...
+<div class="container">
+    <div class="row" style="margin-top: 100px">
+        <div class="col-md-5 col-md-offset-1">
+
+            <div class="panel panel-default">
+                <!-- Default panel contents -->
+                <div class="panel-heading">create room</div>
+                <div class="panel-body">
+                    <div class="input-group">
+                            <span class="input-group-btn">
+                            <button class="btn btn-default" type="button">Create Room!</button>
+                            </span>
+                        <input type="text" class="form-control" placeholder="Room ID">
+                    </div><!-- /input-group -->
+                </div>
+
+            </div>
+
+        </div>
+        <div class="col-md-5">
+
+            <div class="panel panel-default">
+                <!-- Default panel contents -->
+                <div class="panel-heading">join room</div>
+                <div class="panel-body">
+                    <div class="input-group">
+                            <span class="input-group-btn">
+                            <button class="btn btn-default" type="button">Join Room!</button>
+                            </span>
+                        <input type="text" class="form-control" placeholder="Room ID">
+                    </div><!-- /input-group -->
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-offset-1 col-md-10">
+            <div class="panel panel-default">
+                <!-- Default panel contents -->
+                <div class="panel-heading">Panel heading</div>
+                <table class="table">
+                    <tbody>
+
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </body>
+<script>
+
+    let rooms = [
+        {
+            name: "first room",
+        },
+        {
+            name: "second room",
+        },
+        {
+            name: "ajagh vajagh",
+        },
+        {
+            name: "chetori",
+        },
+        {
+            name: "bepach",
+        },
+    ];
+
+    // generate rooms elements
+    rooms.map((room) =>
+        $('tbody')[0].innerHTML += `<tr"><td>${room.name}</td></tr>`
+    )
+</script>
 </html>
+
