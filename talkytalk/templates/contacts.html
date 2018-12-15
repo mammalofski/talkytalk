@@ -99,12 +99,13 @@
 
     $.ajax({
         url: "/api/contact",
-        headers: {"X-CSRFToken": csrf_val},
+        headers: {"X-CSRFToken": csrf_val, 'Authorization': 'Token ' + $.cookie("userToken")},
         type: "GET",
         success: function (data, textStatus, jqXHR) {
             // generate rooms elements
+            console.log(data);
             data.map((contact) =>
-                $('tbody')[0].innerHTML += `<tr><td>${contact.name}</td><td>${contact.contact}</td></tr>`
+                $('tbody')[0].innerHTML += `<tr><td>${contact.contact_name}</td><td>${contact.contact}</td></tr>`
             )
         },
         error: function (jqXHR, textStatus, errorThrown) {
@@ -120,7 +121,7 @@
 
         $.ajax({
             url: "/api/contact",
-            headers: {"X-CSRFToken": csrf_val},
+            headers: {"X-CSRFToken": csrf_val, 'Authorization': 'Token ' + $.cookie("userToken")},
             type: "POST",
             data: {
                 'contact': email,
@@ -130,6 +131,7 @@
             success: function (data, textStatus, jqXHR) {
                 // generate rooms elements
                 console.log(data);
+                $('tbody')[0].innerHTML += `<tr><td>${data.contact_name}</td><td>${data.contact}</td></tr>`
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 console.log('error')
