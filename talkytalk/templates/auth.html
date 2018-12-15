@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
 </head>
 <body>
 <div class="container">
@@ -16,10 +17,11 @@
                     Login
                 </h3>
                 <p>email:</p>
-                <input name="email" type="text">
+                <input name="email" type="text" id="login_email">
                 <p>password:</p>
-                <input name="password" type="password">
-                <button> Login</button>
+                <input name="password" type="password" id="login_pass">
+                <button onclick="loginFunc()"> Login</button>
+                <p style="color: darkred" id="login_error"></p>
             </div>
         </div>
         <div class="col-md-6">
@@ -28,12 +30,14 @@
                     Register
                 </h3>
                 <p>email:</p>
-                <input name="email" type="text">
+                <input name="email" type="text" id="register_email">
                 <p>password:</p>
-                <input name="password1" type="password">
+                <input name="password1" type="password" id="register_pass_1">
                 <p>repeat-password:</p>
-                <input name="password2" type="password">
-                <button>Register</button>
+                <input name="password2" type="password" id="register_pass_2">
+                <button onclick="registerFunc()">Register</button>
+                <p style="color: darkred" id="register_error"></p>
+                <p style="color: green" id="register_success"></p>
             </div>
         </div>
     </div>
@@ -41,4 +45,49 @@
 
 
 </body>
+<script>
+    var csrf_val = document.cookie.split('csrftoken=')[1];
+    var registerFunc = function () {
+        var email = $('#register_email').val();
+        var password1 = $('#register_pass_1').val();
+        var password2 = $('#register_pass_2').val();
+        var request_data = {
+            'email': email,
+            'password1': password1,
+            'password2': password2
+        };
+        $.ajax({
+            url: '/rest-auth/registration/', type: 'POST', data: request_data,
+            headers: {'X-CSRFToken': csrf_val},
+            success: function (data) {
+                $('#register_error')[0].innerText = "";
+                $("#register_success")[0].innerText = "User has Registered Successfully."
+            }, error: function (err) {
+                $("#register_success")[0].innerText = "";
+                $('#register_error')[0].innerText = err.responseText;
+            }
+        })
+    };
+
+    var loginFunc = function () {
+        var email = $('#login_email').val();
+        var password = $('#login_pass').val();
+        var request_data = {
+            'email': email,
+            'password': password,
+        };
+        console.log(request_data);
+        var ajax_req;
+         ajax_req = $.ajax({
+            url: '/rest-auth/login/', type: 'POST', data: request_data,
+            headers: {'X-CSRFToken': csrf_val},
+            success: function (data) {
+                $.cookie("userToken", data.key);
+            }, error: function (err) {
+                $('#login_error')[0].innerText = "ERROR In Login...";
+            }
+        });
+    };
+
+</script>
 </html>

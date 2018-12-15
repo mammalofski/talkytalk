@@ -14,18 +14,31 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
-from . import views
+from django.urls import path
+from django.conf.urls import include, re_path
 import django_eventstream
-from django.views.generic import TemplateView, RedirectView
+from django.views.generic import TemplateView
+from rest_auth.registration.views import VerifyEmailView
+from allauth.account.views import confirm_email
+import talk_app.views as talkAppViews
 
 urlpatterns = [
-    path('/', TemplateView.as_view(template_name='index.html')),
-    path('auth/', TemplateView.as_view(template_name='auth.html')),
+    path('myauth/', TemplateView.as_view(template_name='auth.html')),
     path('contacts/', TemplateView.as_view(template_name='contacts.html')),
     path('rooms/', TemplateView.as_view(template_name='room.html')),
     path('admin/', admin.site.urls),
-    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('api/', include(('talk_app.urls', 'talk_app'), namespace='talk_app')),
     path('events/', include(django_eventstream.urls), {'channels': ['testChannel']}),
+    # REST AUTH
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path('rest-auth/', include('rest_auth.urls')),
+    path('rest-auth/registration/', include('rest_auth.registration.urls')),
+    re_path('account-confirm-email/', VerifyEmailView.as_view(),
+            name='account_email_verification_sent'),
+    re_path('rest-auth/registration/account-confirm-email/(?P<key>\w+)/', confirm_email,
+            name="confirm_email"),
+    re_path('account-confirm-email/(?P<key>\w+)/', confirm_email,
+            name="confirm_email"),
+    path('reset/(?int::<first_token>\w+)/(?int::<password_reset_token>[-\w]+)/', talkAppViews.confirm_password_reset,
+         name="confirm_password_reset"),
 ]
