@@ -13,8 +13,22 @@ class ListCreateRoom(generics.ListCreateAPIView):
     permission_classes = (AllowAny,)
 
     def get_queryset(self):
-        # return models.Room.objects.filter(callee=self.request.user)
+        # return models.Room.objects.filter(callee=self.request.user)  # TODO: replace this line later
         return models.Room.objects.all()
+
+    def create(self, request, *args, **kwargs):
+        print('in room creation')
+        # create the room
+        room = models.Room.objects.create(
+            # callee=self.context['request'].user,
+            callee=models.User.objects.get(id=1),  # TODO: replace this line later
+            room_id=request.data.get('room_id'),
+        )
+        # then add the callee himself/herself to participants
+        # room.participants.add(self.context['request'].user.id)
+        room.participants.add(1)  # TODO: replace this line later
+        serializer = self.serializer_class(room)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class RetrieveUpdateDestroyRoom(generics.RetrieveUpdateDestroyAPIView):

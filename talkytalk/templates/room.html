@@ -26,9 +26,11 @@
                 <div class="panel-body">
                     <div class="input-group">
                             <span class="input-group-btn">
-                            <button class="btn btn-default" type="button">Create Room!</button>
+                            <button class="btn btn-default"
+                                    onclick="createRoom()"
+                                    type="button">Create Room!</button>
                             </span>
-                        <input type="text" class="form-control" placeholder="Room ID">
+                        <input type="text" id="create-room-input" class="form-control" placeholder="Room ID">
                     </div><!-- /input-group -->
                 </div>
 
@@ -60,10 +62,10 @@
                 <div class="panel-heading">Panel heading</div>
                 <table class="table table-hover table-bordered">
                     <thead>
-                        <tr>
-                            <th>room id</th>
-                            <th>room status</th>
-                        </tr>
+                    <tr>
+                        <th>room id</th>
+                        <th>room status</th>
+                    </tr>
                     </thead>
                     <tbody></tbody>
                 </table>
@@ -80,13 +82,12 @@
 </body>
 <script>
     const csrf_val = document.cookie.split("csrftoken=")[1];
+
     $.ajax({
         url: "http://127.0.0.1:8001/api/room/",
         headers: {"X-CSRFToken": csrf_val},
         type: "GET",
         success: function (data, textStatus, jqXHR) {
-            // const rooms = data;
-            console.log(data);
             // generate rooms elements
             data.map((room) =>
                 $('tbody')[0].innerHTML += `<tr><td>${room.room_id}</td><td>${room.status}</td></tr>`
@@ -96,6 +97,28 @@
             console.log('error')
         }
     });
+
+    let createRoom = () => {
+        const value = document.getElementById("create-room-input").value;
+        console.log(value);
+        $.ajax({
+            url: "http://127.0.0.1:8001/api/room/",
+            headers: {"X-CSRFToken": csrf_val},
+            data: {
+                'room_id': value,
+            },
+            type: "POST",
+            success: function (data, textStatus, jqXHR) {
+                // const rooms = data;
+                console.log(data);
+                // generate rooms elements
+
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log('error')
+            }
+        });
+    }
 
 </script>
 </html>
