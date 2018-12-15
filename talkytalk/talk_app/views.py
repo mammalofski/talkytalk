@@ -14,7 +14,6 @@ class ListCreateRoom(generics.ListCreateAPIView):
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        print ("*****", self.request.user)
         return models.Room.objects.filter(callee=self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -66,13 +65,7 @@ class ListCreateContact(generics.ListCreateAPIView):
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        # return models.Contact.objects.filter(owner=self.request.user)  # TODO: replace this line later
-        return models.Contact.objects.all()
-
-    # def perform_create(self, serializer):
-    #     # save the contact with owner of the user
-    #     # serializer.save(owner=self.request.user)  # TODO: replace this line later
-    #     serializer.save(owner=models.TalkyTalkUser.objects.get(id=1))
+        return models.Contact.objects.filter(owner=self.request.user)
 
     def create(self, request, *args, **kwargs):
         user = get_object_or_404(models.TalkyTalkUser, email=request.data.get('contact'))

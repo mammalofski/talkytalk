@@ -24,7 +24,7 @@
     <div class="row" style="margin-top: 100px">
         <div class="col-md-10 col-md-offset-1">
 
-            <div class="panel panel-primary">
+            <div class="panel panel-success">
                 <!-- Default panel contents -->
                 <div class="panel-heading">Create Contact</div>
                 <div class="panel-body">
@@ -69,7 +69,7 @@
     </div>
     <div class="row">
         <div class="col-md-offset-1 col-md-10">
-            <div class="panel panel-primary">
+            <div class="panel panel-success">
                 <!-- Default panel contents -->
                 <div class="panel-heading">Contacts</div>
                 <table class="table table-hover table-bordered">
@@ -95,15 +95,13 @@
 </body>
 <script>
     const csrf_val = document.cookie.split("csrftoken=")[1];
-    console.log($.cookie("userToken"));
-
+    // get the contacts
     $.ajax({
         url: "/api/contact",
         headers: {"X-CSRFToken": csrf_val, 'Authorization': 'Token ' + $.cookie("userToken")},
         type: "GET",
         success: function (data, textStatus, jqXHR) {
-            // generate rooms elements
-            console.log(data);
+            // generate table rows
             data.map((contact) =>
                 $('tbody')[0].innerHTML += `<tr><td>${contact.contact_name}</td><td>${contact.contact}</td></tr>`
             )
@@ -114,24 +112,34 @@
     });
 
     const submitContact = () => {
-        console.log('in submit contact req');
-        const email = $('#email').val();
-        const name = $('#name').val();
-        const detail = $('#detail').val();
+        // get form data
+        const email = document.getElementById("email");
+        const name = document.getElementById("name");
+        const detail = document.getElementById("detail");
+        let button = $('#submitContact');
 
+        // create the contact
         $.ajax({
             url: "/api/contact",
             headers: {"X-CSRFToken": csrf_val, 'Authorization': 'Token ' + $.cookie("userToken")},
             type: "POST",
             data: {
-                'contact': email,
-                'contact_name': name,
-                'detail': detail,
+                'contact': email.value,
+                'contact_name': name.value,
+                'detail': detail.value,
             },
             success: function (data, textStatus, jqXHR) {
-                // generate rooms elements
-                console.log(data);
-                $('tbody')[0].innerHTML += `<tr><td>${data.contact_name}</td><td>${data.contact}</td></tr>`
+                // add created contact to the table
+                $('tbody')[0].innerHTML += `<tr><td>${data.contact_name}</td><td>${data.contact}</td></tr>`;
+                email.value = null;
+                name.value = null;
+                detail.value = null;
+                button.css('background-color', '#3c763d');
+                button.css('color', 'white');
+                setTimeout(() => {
+                    button.css('background-color', '#ffffff');
+                    button.css('color', 'black');
+                }, 1000)
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 console.log('error')
