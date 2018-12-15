@@ -12,6 +12,10 @@
         .table th {
             text-align: center;
         }
+
+        .btn {
+            transition: all 0.5s;
+        }
     </style>
 
 </head>
@@ -20,13 +24,14 @@
     <div class="row" style="margin-top: 100px">
         <div class="col-md-5 col-md-offset-1">
 
-            <div class="panel panel-default">
+            <div class="panel panel-primary">
                 <!-- Default panel contents -->
                 <div class="panel-heading">create room</div>
                 <div class="panel-body">
                     <div class="input-group">
                             <span class="input-group-btn">
                             <button class="btn btn-default"
+                                    id="create-room-button"
                                     onclick="createRoom()"
                                     type="button">Create Room!</button>
                             </span>
@@ -39,13 +44,14 @@
         </div>
         <div class="col-md-5">
 
-            <div class="panel panel-default">
+            <div class="panel panel-primary">
                 <!-- Default panel contents -->
                 <div class="panel-heading">join room</div>
                 <div class="panel-body">
                     <div class="input-group">
                             <span class="input-group-btn">
                             <button class="btn btn-default"
+                                    id="join-room-button"
                                     onclick="joinRoom()"
                                     type="button">Join Room!</button>
                             </span>
@@ -61,9 +67,9 @@
     </div>
     <div class="row">
         <div class="col-md-offset-1 col-md-10">
-            <div class="panel panel-default">
+            <div class="panel panel-primary">
                 <!-- Default panel contents -->
-                <div class="panel-heading">Panel heading</div>
+                <div class="panel-heading">User Rooms</div>
                 <table class="table table-hover table-bordered">
                     <thead>
                     <tr>
@@ -103,45 +109,61 @@
     });
 
     const createRoom = () => {
-        const value = document.getElementById("create-room-input").value;
-        console.log(value);
+        let inputElement = document.getElementById("create-room-input");
+        let button = $("#create-room-button");
         $.ajax({
             url: "http://127.0.0.1:8001/api/room/",
             headers: {"X-CSRFToken": csrf_val},
             data: {
-                'room_id': value,
+                'room_id': inputElement.value,
             },
             type: "POST",
             success: function (data, textStatus, jqXHR) {
-                // const rooms = data;
-                console.log(data);
                 // generate rooms elements
+                $('tbody')[0].innerHTML += `<tr><td>${data.room_id}</td><td>${data.status}</td></tr>`;
+                inputElement.value = null;
+                button.css('background-color', '#3c763d');
+                button.css('color', 'white');
+                setTimeout(() => {
+                    button.css('background-color', '#ffffff');
+                    button.css('color', 'black');
+                }, 1000)
 
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                console.log('error')
+                console.log(textStatus);
+                console.log(errorThrown);
+                console.log(jqXHR);
+                if (errorThrown === 'Not Acceptable')
+                    alert('room with this ID already exists');
+                else
+                    alert('please enter a valid room_id')
             }
         });
     };
 
     const joinRoom = () => {
-        const value = document.getElementById("join-room-input").value;
-        console.log(value);
+        let inputElement = document.getElementById("join-room-input");
+        let button = $("#join-room-button");
         $.ajax({
             url: "http://127.0.0.1:8001/api/room/join",
             headers: {"X-CSRFToken": csrf_val},
             data: {
-                'room_id': value,
+                'room_id': inputElement.value,
             },
             type: "POST",
             success: function (data, textStatus, jqXHR) {
-                // const rooms = data;
-                console.log(data);
-                // generate rooms elements
+                inputElement.value = null;
+                button.css('background-color', '#3c763d');
+                button.css('color', 'white');
+                setTimeout(() => {
+                    button.css('background-color', '#ffffff');
+                    button.css('color', 'black');
+                }, 1000)
 
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                console.log('error')
+                alert('please enter a valid room_id')
             }
         });
     }

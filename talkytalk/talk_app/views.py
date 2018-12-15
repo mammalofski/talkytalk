@@ -18,6 +18,11 @@ class ListCreateRoom(generics.ListCreateAPIView):
 
     def create(self, request, *args, **kwargs):
         print('in room creation')
+
+        # if models.Room.objects.filter(room_id=request.data.get('room_id'), callee=request.user).exists():  # TODO: replace this line later
+        if models.Room.objects.filter(room_id=request.data.get('room_id')).exists():
+            return Response('room with this id already exists', status=status.HTTP_406_NOT_ACCEPTABLE)
+
         # create the room
         room = models.Room.objects.create(
             # callee=self.context['request'].user,
