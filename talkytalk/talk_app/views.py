@@ -22,11 +22,11 @@ class ListCreateRoom(generics.ListCreateAPIView):
 
         # create the room
         room = models.Room.objects.create(
-            callee=self.context['request'].user,
+            callee=self.request.user,
             room_id=request.data.get('room_id'),
         )
         # then add the callee himself/herself to participants
-        room.participants.add(self.context['request'].user.id)
+        room.participants.add(self.request.user.id)
         serializer = self.serializer_class(room)
         send_event('test', 'message', {'text': 'SSE Channel With Client for CreateRoom'})
         return Response(serializer.data, status=status.HTTP_201_CREATED)

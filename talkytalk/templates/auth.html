@@ -7,39 +7,68 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+
+    <style>
+        .panel-default > .panel-heading {
+            color: #333;
+            background-color: #a0c1ff;
+            border-color: #a0c1ff;
+        }
+
+        .panel-default {
+            border-color: #a0c1ff;
+        }
+
+    </style>
 </head>
 <body>
 <div class="container">
-    <div class="row">
-        <div class="col-md-6">
-            <div>
-                <h3>
-                    Login
-                </h3>
-                <p>email:</p>
-                <input name="email" type="text" id="login_email">
-                <p>password:</p>
-                <input name="password" type="password" id="login_pass">
-                <button onclick="loginFunc()"> Login</button>
-                <p style="color: darkred" id="login_error"></p>
+    <div class="row"  style="margin-top: 40px">
+
+        <div class="col-md-4 col-md-offset-2">
+            <div class="panel panel-default">
+                <!-- Default panel contents -->
+                <div class="panel-heading">Login</div>
+                <div class="panel-body">
+                    <div class="col-md-10 col-md-offset-1">
+                        <p>email:</p>
+                        <input name="email" class="form-control" type="text" id="login_email">
+                        <p>password:</p>
+                        <input name="password" class="form-control" type="password" id="login_pass">
+                        <button onclick="loginFunc()" class="btn btn-primary" style="margin-top: 20px"> Login</button>
+                        <p style="color: darkred" id="login_error"></p>
+
+                    </div>
+
+                </div>
+
             </div>
         </div>
-        <div class="col-md-6">
-            <div>
-                <h3>
-                    Register
-                </h3>
-                <p>email:</p>
-                <input name="email" type="text" id="register_email">
-                <p>password:</p>
-                <input name="password1" type="password" id="register_pass_1">
-                <p>repeat-password:</p>
-                <input name="password2" type="password" id="register_pass_2">
-                <button onclick="registerFunc()">Register</button>
-                <p style="color: darkred" id="register_error"></p>
-                <p style="color: green" id="register_success"></p>
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <!-- Default panel contents -->
+                <div class="panel-heading">Register</div>
+                <div class="panel-body">
+                    <div class="col-md-10 col-md-offset-1">
+                        <p>email:</p>
+                        <input name="email" class="form-control" type="text" id="register_email">
+                        <p>password:</p>
+                        <input name="password1" class="form-control" type="password" id="register_pass_1">
+                        <p>repeat-password:</p>
+                        <input name="password2" class="form-control" type="password" id="register_pass_2">
+                        <button onclick="registerFunc()" class="btn btn-primary" style="margin-top: 20px">Register
+                        </button>
+                        <p style="color: darkred" id="register_error"></p>
+                        <p style="color: green" id="register_success"></p>
+
+                    </div>
+
+                </div>
+
             </div>
         </div>
+
+
     </div>
 </div>
 
@@ -85,7 +114,7 @@
                 var date = new Date();
                 var minutes = 3000;
                 date.setTime(date.getTime() + (minutes * 60 * 1000));
-                $.cookie("userToken", data.key, { expires: date , path:'/'});
+                $.cookie("userToken", data.key, {expires: date, path: '/'});
             }, error: function (err) {
                 $('#login_error')[0].innerText = "ERROR In Login...";
             }
