@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+hi
+</body>
+
+<script>
+    // Create a new WebSocket
+    ws = new WebSocket("ws://127.0.0.1:8000/ws/chat/salam");
+    // Make it show an alert when a message is received
+    ws.onmessage = function (message) {
+        alert(message.data);
+    };
+    // Send a new message when the WebSocket opens
+    ws.onopen = function () {
+        ws.send('Hello, world');
+    }
+</script>
+
+</html>
+
