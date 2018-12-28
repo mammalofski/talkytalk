@@ -1,4 +1,5 @@
 from django.conf.urls import url
+from django.urls import path
 from channels.routing import URLRouter
 from channels.http import AsgiHandler
 from channels.auth import AuthMiddlewareStack
@@ -7,7 +8,7 @@ from . import consumers
 
 ws_urlpatterns = [
     # url(r'^chat/(?P<username>[^/]+)$', consumers.ChatConsumer),
-    url(r'^$', consumers.ChatConsumer),
+    path('chat/<str:username>/', consumers.ChatConsumer),
 ]
 
 websocket_urlpatterns = [
