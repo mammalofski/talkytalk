@@ -16,8 +16,7 @@ class ChatConsumer(WebsocketConsumer):
         user_token = self.scope['cookies']['userToken']
         token = Token.objects.get(key=user_token)
         self.sender = token.user_id
-
-        self.room_group_name = 'chat_{}_with_{}'.format(self.sender, self.user_id)
+        self.room_group_name = 'chat_{}_with_{}'.format(min(self.sender, self.user_id), max(self.sender, self.user_id))
 
         # Join room group
         async_to_sync(self.channel_layer.group_add)(
