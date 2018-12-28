@@ -6,6 +6,7 @@ import django_eventstream
 from . import consumers
 
 ws_urlpatterns = [
+    # url(r'^chat/(?P<username>[^/]+)$', consumers.ChatConsumer),
     url(r'^$', consumers.ChatConsumer),
 ]
 

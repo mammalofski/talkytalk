@@ -6,8 +6,9 @@ import json
 class ChatConsumer(WebsocketConsumer):
     def connect(self):
         print('in fuuuuuuuuuuuuuuuuuunc connect')
-        self.room_name = self.scope['url_route']['kwargs']['room_name']
-        self.room_group_name = 'chat_%s' % self.room_name
+        # self.username = self.scope['url_route']['kwargs']['username']
+        # self.room_group_name = 'chat_%s' % self.username
+        self.room_group_name = 'chat'
 
         # Join room group
         async_to_sync(self.channel_layer.group_add)(
@@ -29,16 +30,17 @@ class ChatConsumer(WebsocketConsumer):
     # Receive message from WebSocket
     def receive(self, text_data):
         print('in fuuuuuuuuuuuuuuuuuunc receive')
+        print('text_data', text_data)
 
-        text_data_json = json.loads(text_data)
-        message = text_data_json['message']
+        # text_data_json = json.loads(text_data)
+        # message = text_data_json['message']
 
         # Send message to room group
         async_to_sync(self.channel_layer.group_send)(
             self.room_group_name,
             {
                 'type': 'chat_message',
-                'message': message
+                'message': text_data
             }
         )
 

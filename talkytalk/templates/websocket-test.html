@@ -17,7 +17,8 @@ hi
     };
     // Send a new message when the WebSocket opens
     ws.onopen = function () {
-        ws.send('Hello, world');
+        const message = {'message': 'hello world'};
+        ws.send('{\'message\': \'hello world\'}');
     }
 </script>
 
