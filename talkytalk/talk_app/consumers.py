@@ -38,7 +38,7 @@ class ChatConsumer(WebsocketConsumer):
 
     # Receive message from WebSocket
     def receive(self, text_data):
-        print('in fuuuuuuuuuuuuuuuuuunc receive')
+        print('in fuuuuuuuuuuuuuuuuuunc receive', text_data)
 
         # convert received data to dict and get the data
         json_data = json.loads(text_data)

@@ -275,6 +275,7 @@
 </div>
 </body>
 <script>
+
     $(".write_msg").keyup(function (event) {
         if (event.keyCode === 13) {
             if (!$(".write_msg").val().length)
@@ -282,29 +283,8 @@
             $(".msg_send_btn").click();
         }
     });
-    // Create a new WebSocket
-    ws = new WebSocket("ws://127.0.0.1:8002/ws/chat/navid/");
-    // Make it show an alert when a message is received
-    ws.onmessage = function (message) {
-        var today = new Date();
-        var time = today.getHours() + ":" + today.getMinutes();
-        var message_data = JSON.parse(message.data).message;
-        $(".msg_history")[0].innerHTML += '<div class="incoming_msg">\n' +
-            '                        <div class="incoming_msg_img"><img src="https://ptetutorials.com/images/user-profile.png"\n' +
-            '                                                           alt="sunil"></div>\n' +
-            '                        <div class="received_msg">\n' +
-            '                            <div class="received_withd_msg">\n' +
-            '                                <p>' + message_data + '<span class="time_date" style="color: black">' + time + '</span></div></p>\n' +
-            '                        </div>\n' +
-            '                    </div>'
-    };
-    // Send a new message when the WebSocket opens
-    ws.onopen = function () {
-        const message = {'message': 'hello world'};
-        // ws.send('{\'message\': \'hello world\'}');
-    };
 
-
+    var contacts_list;
     const csrf_val = document.cookie.split("csrftoken=")[1];
     $.ajax({
         url: "/api/contact",
@@ -312,10 +292,10 @@
         type: "GET",
         success: function (data, textStatus, jqXHR) {
             // generate table rows
-            var contacts_list = data.contacts;
+            contacts_list = data;
             data.map((contact) =>
                 document.getElementsByClassName('inbox_chat')[0].innerHTML += '<div class="chat_list">\n' +
-                    '                        <div class="chat_people">\n' +
+                    '                        <div class="chat_people" onclick="startConversation(this)">\n' +
                     '                            <div class="chat_img"><img src="https://ptetutorials.com/images/user-profile.png"\n' +
                     '                                                       alt="sunil"></div>\n' +
                     '                            <div class="chat_ib">\n' +
@@ -334,14 +314,37 @@
     var sendMessage = function () {
         var message = $('.write_msg').val();
         var today = new Date();
+        var time = today.getHours() + ":" + today.getMinutes();
+        $(".msg_history")[0].innerHTML += '<div class="outgoing_msg">\n' +
+            '                        <div class="sent_msg">\n' +
+            '                            <p>' + message + '<span class="time_date"> ' + time + '</span></p>\n' +
+            '                            </div>\n' +
+            '                    </div>';
+        $(".write_msg").val('');
+        ws.send('{"message": "' + message + '", "sender": 14}')
+    }
+
+    var startConversation = function (data) {
+        $(".msg_history")[0].innerHTML = '';
+        var index = $('.chat_people').index(data);
+        ws = new WebSocket("ws://127.0.0.1:8002/ws/chat/"+ contacts_list[index].contact +"/");
+        // Make it show an alert when a message is received
+        ws.onmessage = function (message) {
+            var today = new Date();
             var time = today.getHours() + ":" + today.getMinutes();
-            $(".msg_history")[0].innerHTML += '<div class="outgoing_msg">\n' +
-                '                        <div class="sent_msg">\n' +
-                '                            <p>' + message + '<span class="time_date"> ' + time + '</span></p>\n' +
-                '                            </div>\n' +
-                '                    </div>';
-            $(".write_msg").val('');
-        ws.send(message)
+            var message_data = JSON.parse(message.data).message.message;
+            $(".msg_history")[0].innerHTML += '<div class="incoming_msg">\n' +
+                '                        <div class="incoming_msg_img"><img src="https://ptetutorials.com/images/user-profile.png"\n' +
+                '                                                           alt="sunil"></div>\n' +
+                '                        <div class="received_msg">\n' +
+                '                            <div class="received_withd_msg">\n' +
+                '                                <p>' + message_data + '<span class="time_date" style="color: black">' + time + '</span></div></p>\n' +
+                '                        </div>\n' +
+                '                    </div>'
+        };
+        // Send a new message when the WebSocket opens
+        ws.onopen = function () {
+        };
     }
 
 </script>

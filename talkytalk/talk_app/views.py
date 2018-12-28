@@ -65,6 +65,7 @@ class ListCreateContact(generics.ListCreateAPIView):
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
+        print('user:+++++++++++++++', self.request.user)
         return models.Contact.objects.filter(owner=self.request.user)
 
     def create(self, request, *args, **kwargs):
