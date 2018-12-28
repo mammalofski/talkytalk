@@ -8,15 +8,15 @@ from . import consumers
 
 ws_urlpatterns = [
     # url(r'^chat/(?P<username>[^/]+)$', consumers.ChatConsumer),
-    path('chat/<str:username>/', consumers.ChatConsumer),
+    path('chat/<int:user_id>/', consumers.ChatConsumer),
 ]
 
 websocket_urlpatterns = [
-    url(r'^ws/chat/(?P<username>[^/]+)/$', consumers.ChatConsumer),
-    # url('ws/', AuthMiddlewareStack(
-    #     URLRouter(ws_urlpatterns)
-    # ), {'channels': ['websocket_channel']}),
-    # url('', AsgiHandler),
+    # path('ws/chat/<int:user_id>', consumers.ChatConsumer),
+    url('ws/', AuthMiddlewareStack(
+        URLRouter(ws_urlpatterns)
+    ), {'channels': ['websocket_channel']}),
+    url('', AsgiHandler),
 ]
 
 urlpatterns = [

@@ -10,14 +10,14 @@ class ChatConsumer(WebsocketConsumer):
         print('in fuuuuuuuuuuuuuuuuuunc connect')
 
         # get receiver username
-        self.username = self.scope['url_route']['kwargs']['username']
+        self.user_id = self.scope['url_route']['kwargs']['user_id']
 
         # get sender username
         user_token = self.scope['cookies']['userToken']
         token = Token.objects.get(key=user_token)
-        self.sender = token.user.username
+        self.sender = token.user_id
 
-        self.room_group_name = 'chat_{}_with_{}'.format(self.sender, self.username)
+        self.room_group_name = 'chat_{}_with_{}'.format(self.sender, self.user_id)
 
         # Join room group
         async_to_sync(self.channel_layer.group_add)(
@@ -46,8 +46,8 @@ class ChatConsumer(WebsocketConsumer):
 
         # save received message to db
         message_obj = models.Message.objects.create(
-            sender=models.TalkyTalkUser.objects.get(username=self.sender),
-            receiver=models.TalkyTalkUser.objects.get(username=self.username),
+            sender=models.TalkyTalkUser.objects.get(id=self.sender),
+            receiver=models.TalkyTalkUser.objects.get(id=self.user_id),
             message=message
         )
 
