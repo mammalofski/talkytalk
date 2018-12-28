@@ -118,3 +118,9 @@ class ListMessage(generics.ListAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+class GetUserDetails(generics.ListAPIView):
+    serializer_class = serializers.UserDetailsSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        return models.TalkyTalkUser.objects.filter(id=self.request.user.id)

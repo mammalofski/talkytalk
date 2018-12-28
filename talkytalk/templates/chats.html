@@ -284,32 +284,55 @@
         }
     });
 
+    var user_details;
     var contacts_list;
     const csrf_val = document.cookie.split("csrftoken=")[1];
-    $.ajax({
-        url: "/api/contact",
-        headers: {"X-CSRFToken": csrf_val, 'Authorization': 'Token ' + $.cookie("userToken")},
-        type: "GET",
-        success: function (data, textStatus, jqXHR) {
-            // generate table rows
-            contacts_list = data;
-            data.map((contact) =>
-                document.getElementsByClassName('inbox_chat')[0].innerHTML += '<div class="chat_list">\n' +
-                    '                        <div class="chat_people" onclick="startConversation(this)">\n' +
-                    '                            <div class="chat_img"><img src="https://ptetutorials.com/images/user-profile.png"\n' +
-                    '                                                       alt="sunil"></div>\n' +
-                    '                            <div class="chat_ib">\n' +
-                    `                                <h5> ${contact.contact_name} <span class="chat_date"></span></h5>\n` +
-                    '                                <p>This is message preview</p>\n' +
-                    '                            </div>\n' +
-                    '                        </div>\n' +
-                    '                    </div>'
-            )
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-            console.log('error')
-        }
-    });
+
+    var getUserDetails = function () {
+        $.ajax({
+            url: "/api/getUser",
+            headers: {"X-CSRFToken": csrf_val, 'Authorization': 'Token ' + $.cookie("userToken")},
+            type: "GET",
+            success: function (data, textStatus, jqXHR) {
+                user_details = data[0]
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log('error')
+            }
+        });
+    };
+    getUserDetails();
+
+
+    var getContactsList = function () {
+        $.ajax({
+            url: "/api/contact",
+            headers: {"X-CSRFToken": csrf_val, 'Authorization': 'Token ' + $.cookie("userToken")},
+            type: "GET",
+            success: function (data, textStatus, jqXHR) {
+                // generate table rows
+                contacts_list = data;
+                data.map((contact) =>
+                    document.getElementsByClassName('inbox_chat')[0].innerHTML += '<div class="chat_list">\n' +
+                        '                        <div class="chat_people" onclick="startConversation(this)">\n' +
+                        '                            <div class="chat_img"><img src="https://ptetutorials.com/images/user-profile.png"\n' +
+                        '                                                       alt="sunil"></div>\n' +
+                        '                            <div class="chat_ib">\n' +
+                        `                                <h5> ${contact.contact_name} <span class="chat_date"></span></h5>\n` +
+                        '                                <p>This is message preview</p>\n' +
+                        '                            </div>\n' +
+                        '                        </div>\n' +
+                        '                    </div>'
+                )
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log('error')
+            }
+        });
+    };
+
+    getContactsList();
+
 
     var sendMessage = function () {
         var message = $('.write_msg').val();
@@ -317,35 +340,78 @@
         var time = today.getHours() + ":" + today.getMinutes();
         $(".msg_history")[0].innerHTML += '<div class="outgoing_msg">\n' +
             '                        <div class="sent_msg">\n' +
-            '                            <p>' + message + '<span class="time_date"> ' + time + '</span></p>\n' +
+            '                            <p>' + message + '<span class="time_date"></span></p>\n' +
             '                            </div>\n' +
             '                    </div>';
         $(".write_msg").val('');
         ws.send('{"message": "' + message + '", "sender": 14}')
-    }
+    };
+
 
     var startConversation = function (data) {
         $(".msg_history")[0].innerHTML = '';
         var index = $('.chat_people').index(data);
-        ws = new WebSocket("ws://127.0.0.1:8002/ws/chat/"+ contacts_list[index].contact +"/");
+        var contact_id = contacts_list[index].contact;
+        getConversationHistory(contact_id);
+        ws = new WebSocket("ws://127.0.0.1:8002/ws/chat/" + contact_id + "/");
         // Make it show an alert when a message is received
         ws.onmessage = function (message) {
+            var message_json = JSON.parse(message.data).message;
+            var message_data = message_json.message;
             var today = new Date();
             var time = today.getHours() + ":" + today.getMinutes();
-            var message_data = JSON.parse(message.data).message.message;
-            $(".msg_history")[0].innerHTML += '<div class="incoming_msg">\n' +
-                '                        <div class="incoming_msg_img"><img src="https://ptetutorials.com/images/user-profile.png"\n' +
-                '                                                           alt="sunil"></div>\n' +
-                '                        <div class="received_msg">\n' +
-                '                            <div class="received_withd_msg">\n' +
-                '                                <p>' + message_data + '<span class="time_date" style="color: black">' + time + '</span></div></p>\n' +
-                '                        </div>\n' +
-                '                    </div>'
+            if (user_details.pk != message_json.sender)
+                $(".msg_history")[0].innerHTML += '<div class="incoming_msg">\n' +
+                    '                        <div class="incoming_msg_img"><img src="https://ptetutorials.com/images/user-profile.png"\n' +
+                    '                                                           alt="sunil"></div>\n' +
+                    '                        <div class="received_msg">\n' +
+                    '                            <div class="received_withd_msg">\n' +
+                    '                                <p>' + message_data + '<span class="time_date" style="color: black"></span></div></p>\n' +
+                    '                        </div>\n' +
+                    '                    </div>'
         };
         // Send a new message when the WebSocket opens
         ws.onopen = function () {
         };
-    }
+    };
+
+
+    var getConversationHistory = function (user_id) {
+        $.ajax({
+            url: "/api/message/?user=" + user_id,
+            headers: {"X-CSRFToken": csrf_val, 'Authorization': 'Token ' + $.cookie("userToken")},
+            type: "GET",
+            success: function (data, textStatus, jqXHR) {
+                // generate table rows
+                $(".msg_history")[0].innerHTML = '';
+
+                for (var k = 0; k < data.length; k++) {
+                    console.log(data[k].sender, user_details.pk);
+                    if (data[k].sender != user_details.pk) {
+                        $(".msg_history")[0].innerHTML += '<div class="incoming_msg">\n' +
+                            '                        <div class="incoming_msg_img"><img src="https://ptetutorials.com/images/user-profile.png"\n' +
+                            '                                                           alt="sunil"></div>\n' +
+                            '                        <div class="received_msg">\n' +
+                            '                            <div class="received_withd_msg">\n' +
+                            '                                <p>' + data[k].message + '<span class="time_date" style="color: black"></span></div></p>\n' +
+                            '                        </div>\n' +
+                            '                    </div>'
+                    } else {
+                        $(".msg_history")[0].innerHTML += '<div class="outgoing_msg">\n' +
+                            '                        <div class="sent_msg">\n' +
+                            '                            <p>' + data[k].message + '<span class="time_date"></span></p>\n' +
+                            '                            </div>\n' +
+                            '                    </div>';
+                    }
+                }
+
+
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log('error')
+            }
+        });
+    };
 
 </script>
 </html>
