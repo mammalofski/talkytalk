@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from django_eventstream import send_event
+from django.db.models import Q
 
 from . import models
 from . import serializers
@@ -95,4 +96,25 @@ def confirm_password_reset(request, first_token, password_reset_token):
 
 def confirm_email(request, key):
     return redirect("/auth/#/verifyEmail/" + key)
+
+
+class ListMessage(generics.ListAPIView):
+    serializer_class = serializers.MessageSerializer
+    permission_classes = (IsAuthenticated,)
+    queryset = models.Message.objects.all()
+
+    def list(self, request, *args, **kwargs):
+        receiver_id = request.query_params.get('user')
+        if receiver_id:
+            # if receiver id found in query params
+            receiver_id = int(request.query_params.get('user'))
+            messages = models.Message.objects.filter(
+                Q(receiver_id=receiver_id, sender=request.user) | Q(receiver=request.user, sender_id=receiver_id))
+        else:
+            # if no receiver id found in query params
+            messages = models.Message.objects.filter(sender=request.user)
+
+        serializer = self.serializer_class(messages, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 

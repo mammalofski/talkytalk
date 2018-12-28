@@ -1,4 +1,4 @@
-from django.urls import path, include
+from django.urls import path
 from . import views
 
 urlpatterns = [
@@ -7,4 +7,5 @@ urlpatterns = [
     path('room/join', views.JoinRoom.as_view(), name='join_room'),
     path('contact', views.ListCreateContact.as_view(), name='list_contact'),
     path('contact/<int:pk>', views.RetrieveUpdateDestroyContact.as_view(), name='contact_detail'),
+    path('message/', views.ListMessage.as_view(), name='list_message'),
 ]
