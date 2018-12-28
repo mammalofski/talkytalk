@@ -61,6 +61,7 @@ class MyUserManager(BaseUserManager):
 
 class TalkyTalkUser(AbstractBaseUser):
     email = models.EmailField(_("email address"), unique=True)
+    username = models.CharField(_("username"), max_length=30, blank=True, null=True)
     first_name = models.CharField(_("first name"), max_length=30, blank=True, null=True)
     last_name = models.CharField(_("last name"), max_length=30, blank=True, null=True)
     is_active = models.BooleanField(default=True)
@@ -74,10 +75,13 @@ class TalkyTalkUser(AbstractBaseUser):
         self.save()
 
     def get_full_name(self):
-        return ''
+        return "{} {}".format(self.first_name, self.last_name)
 
     def get_short_name(self):
-        return self.email
+        return self.username
+
+    def get_username(self):
+        return self.username
 
     def __str__(self):
         return self.email
@@ -128,3 +132,12 @@ class Contact(models.Model):
 
     def __str__(self):
         return self.contact_name
+
+
+class Message(models.Model):
+    sender = models.ForeignKey(TalkyTalkUser, related_name='sent_messages', on_delete=models.CASCADE)
+    receiver = models.ForeignKey(TalkyTalkUser, related_name='received_messages', on_delete=models.CASCADE)
+    message = models.CharField(max_length=500)
+    created = models.DateTimeField(auto_now_add=True)
+
+

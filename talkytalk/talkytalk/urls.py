@@ -21,11 +21,13 @@ from django.views.generic import TemplateView
 from rest_auth.registration.views import VerifyEmailView
 from allauth.account.views import confirm_email
 import talk_app.views as talkAppViews
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 urlpatterns = [
     path('userAuth/', TemplateView.as_view(template_name='auth.html')),
     path('contacts/', TemplateView.as_view(template_name='contacts.html')),
     path('rooms/', TemplateView.as_view(template_name='room.html')),
+    path('chats/', TemplateView.as_view(template_name='chats.html')),
     path('admin/', admin.site.urls),
     path('api/', include(('talk_app.urls', 'talk_app'), namespace='talk_app')),
     path('events/', include(django_eventstream.urls), {'channels': ['testChannel']}),
@@ -42,3 +44,5 @@ urlpatterns = [
     path('reset/(?int::<first_token>\w+)/(?int::<password_reset_token>[-\w]+)/', talkAppViews.confirm_password_reset,
          name="confirm_password_reset"),
 ]
+
+urlpatterns += staticfiles_urlpatterns()
