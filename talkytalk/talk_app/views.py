@@ -103,11 +103,16 @@ class ListMessage(generics.ListAPIView):
     queryset = models.Message.objects.all()
 
     def list(self, request, *args, **kwargs):
-        receiver_id = int(request.query_params.get('user'))
-        # receiver = models.TalkyTalkUser.objects.get(id=receiver_id)
-        # fetch messages sent between sender and receiver
-        messages = models.Message.objects.filter(
-            Q(receiver_id=receiver_id, sender=request.user) | Q(receiver=request.user, sender_id=receiver_id))
+        receiver_id = request.query_params.get('user')
+        if receiver_id:
+            # if receiver id found in query params
+            receiver_id = int(request.query_params.get('user'))
+            messages = models.Message.objects.filter(
+                Q(receiver_id=receiver_id, sender=request.user) | Q(receiver=request.user, sender_id=receiver_id))
+        else:
+            # if no receiver id found in query params
+            messages = models.Message.objects.filter(sender=request.user)
+
         serializer = self.serializer_class(messages, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
