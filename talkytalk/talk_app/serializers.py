@@ -95,3 +95,15 @@ class ContactSerializer(serializers.ModelSerializer):
             'created',
         )
         model = models.Contact
+
+
+class MessageSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = (
+            'id',
+            'sender',
+            'receiver',
+            'message',
+            'created',
+        )
+        model = models.Message
