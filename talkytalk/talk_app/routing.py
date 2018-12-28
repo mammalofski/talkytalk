@@ -5,10 +5,17 @@ from channels.auth import AuthMiddlewareStack
 import django_eventstream
 from . import consumers
 
-websocket_urlpatterns = [
-    url(r'^ws/chat/(?P<room_name>[^/]+)/$', consumers.ChatConsumer),
+ws_urlpatterns = [
+    url(r'^$', consumers.ChatConsumer),
 ]
 
+websocket_urlpatterns = [
+    # url(r'^ws/chat/(?P<room_name>[^/]+)/$', consumers.ChatConsumer),
+    url('ws/', AuthMiddlewareStack(
+        URLRouter(ws_urlpatterns)
+    ), {'channels': ['websocket_channel']}),
+    url('', AsgiHandler),
+]
 
 urlpatterns = [
     url('events/', AuthMiddlewareStack(

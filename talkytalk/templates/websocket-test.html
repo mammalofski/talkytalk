@@ -10,7 +10,7 @@ hi
 
 <script>
     // Create a new WebSocket
-    ws = new WebSocket("ws://127.0.0.1:8000/ws/chat/salam");
+    ws = new WebSocket("ws://127.0.0.1:8001/ws/");
     // Make it show an alert when a message is received
     ws.onmessage = function (message) {
         alert(message.data);
