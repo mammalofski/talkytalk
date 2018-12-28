@@ -7,7 +7,6 @@ class ChatConsumer(WebsocketConsumer):
     def connect(self):
         print('in fuuuuuuuuuuuuuuuuuunc connect')
         self.username = self.scope['url_route']['kwargs']['username']
-        print('username is ', self.username)
         self.room_group_name = 'chat_%s' % self.username
 
         # Join room group
@@ -31,6 +30,8 @@ class ChatConsumer(WebsocketConsumer):
     def receive(self, text_data):
         print('in fuuuuuuuuuuuuuuuuuunc receive')
         print('text_data', text_data)
+
+        print(json.loads(text_data))
 
         # text_data_json = json.loads(text_data)
         # message = text_data_json['message']

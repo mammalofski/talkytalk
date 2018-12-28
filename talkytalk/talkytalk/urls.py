@@ -42,3 +42,5 @@ urlpatterns = [
     path('reset/(?int::<first_token>\w+)/(?int::<password_reset_token>[-\w]+)/', talkAppViews.confirm_password_reset,
          name="confirm_password_reset"),
 ]
+
+# urlpatterns += staticfiles_urlpatterns()
