@@ -31,10 +31,9 @@ class ChatConsumer(WebsocketConsumer):
         print('in fuuuuuuuuuuuuuuuuuunc receive')
         print('text_data', text_data)
 
-        print(json.loads(text_data))
+        json_data = json.loads(text_data)
+        sender, message = json_data.get('sender'), json_data.get('message')
 
-        # text_data_json = json.loads(text_data)
-        # message = text_data_json['message']
 
         # Send message to room group
         async_to_sync(self.channel_layer.group_send)(

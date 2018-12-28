@@ -134,5 +134,6 @@ class Message(models.Model):
     sender = models.ForeignKey(TalkyTalkUser, related_name='sent_messages', on_delete=models.CASCADE)
     receiver = models.ForeignKey(TalkyTalkUser, related_name='received_messages', on_delete=models.CASCADE)
     message = models.CharField(max_length=500)
+    created = models.DateTimeField(auto_now_add=True)
 
 
