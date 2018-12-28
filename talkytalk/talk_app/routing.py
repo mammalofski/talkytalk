@@ -12,11 +12,11 @@ ws_urlpatterns = [
 ]
 
 websocket_urlpatterns = [
-    # url(r'^ws/chat/(?P<room_name>[^/]+)/$', consumers.ChatConsumer),
-    url('ws/', AuthMiddlewareStack(
-        URLRouter(ws_urlpatterns)
-    ), {'channels': ['websocket_channel']}),
-    url('', AsgiHandler),
+    url(r'^ws/chat/(?P<username>[^/]+)/$', consumers.ChatConsumer),
+    # url('ws/', AuthMiddlewareStack(
+    #     URLRouter(ws_urlpatterns)
+    # ), {'channels': ['websocket_channel']}),
+    # url('', AsgiHandler),
 ]
 
 urlpatterns = [

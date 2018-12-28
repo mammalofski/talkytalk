@@ -1,13 +1,23 @@
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 import json
+from . import models
+from rest_framework.authtoken.models import Token
 
 
 class ChatConsumer(WebsocketConsumer):
     def connect(self):
         print('in fuuuuuuuuuuuuuuuuuunc connect')
+
+        # get receiver username
         self.username = self.scope['url_route']['kwargs']['username']
-        self.room_group_name = 'chat_%s' % self.username
+
+        # get sender username
+        user_token = self.scope['cookies']['userToken']
+        token = Token.objects.get(key=user_token)
+        self.sender = token.user.username
+
+        self.room_group_name = 'chat_{}_with_{}'.format(self.sender, self.username)
 
         # Join room group
         async_to_sync(self.channel_layer.group_add)(
@@ -29,18 +39,29 @@ class ChatConsumer(WebsocketConsumer):
     # Receive message from WebSocket
     def receive(self, text_data):
         print('in fuuuuuuuuuuuuuuuuuunc receive')
-        print('text_data', text_data)
 
+        # convert received data to dict and get the data
         json_data = json.loads(text_data)
-        sender, message = json_data.get('sender'), json_data.get('message')
+        message = json_data.get('message')
 
+        # save received message to db
+        message_obj = models.Message.objects.create(
+            sender=models.TalkyTalkUser.objects.get(username=self.sender),
+            receiver=models.TalkyTalkUser.objects.get(username=self.username),
+            message=message
+        )
 
+        message_to_return = {
+            'message': message,
+            'sender': self.sender,
+            'time_sent': message_obj.created.strftime('%m/%d/%Y %H:%M:%S')
+        }
         # Send message to room group
         async_to_sync(self.channel_layer.group_send)(
             self.room_group_name,
             {
                 'type': 'chat_message',
-                'message': text_data
+                'message': message_to_return
             }
         )
 
