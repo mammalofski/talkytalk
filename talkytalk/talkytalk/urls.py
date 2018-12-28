@@ -21,6 +21,7 @@ from django.views.generic import TemplateView
 from rest_auth.registration.views import VerifyEmailView
 from allauth.account.views import confirm_email
 import talk_app.views as talkAppViews
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 urlpatterns = [
     path('userAuth/', TemplateView.as_view(template_name='auth.html')),
@@ -43,4 +44,4 @@ urlpatterns = [
          name="confirm_password_reset"),
 ]
 
-# urlpatterns += staticfiles_urlpatterns()
+urlpatterns += staticfiles_urlpatterns()
