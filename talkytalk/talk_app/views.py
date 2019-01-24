@@ -2,9 +2,11 @@ from django.shortcuts import get_object_or_404
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from django_eventstream import send_event
 from django.db.models import Q
+from django.views.generic import View
+from django.http import HttpResponse
 
 from . import models
 from . import serializers
@@ -124,3 +126,27 @@ class GetUserDetails(generics.ListAPIView):
 
     def get_queryset(self):
         return models.TalkyTalkUser.objects.filter(id=self.request.user.id)
+
+
+# class Signaling(generics.GenericAPIView):
+#     # permission_classes = (IsAuthenticated,)
+#     def get_queryset(self):
+#         return models.Room.objects.all()
+#
+#     def post(self, request):
+#         print("__________________signaling request___________________")
+#         print(request.data)
+#         return HttpResponse("signaling received")
+
+
+class Signaling(generics.CreateAPIView):
+    serializer_class = serializers.RoomSerializer
+    queryset = models.Room.objects.all()
+    permission_classes = (IsAuthenticated,)
+
+    def create(self, request, *args, **kwargs):
+        print("__________________signaling request___________________")
+        print(request.data)
+        # get the room id and counterpart user and send the sdp to him via sse
+        return HttpResponse("signaling received")
+

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>video chat</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+</head>
+<body>
+<video autoplay></video>
+<script>
+    var es = new EventSource('/events/');
+
+    es.addEventListener('message', function (e) {
+        console.log(e.data);
+    }, false);
+
+    es.addEventListener('stream-reset', function (e) {
+        // ... client fell behind, reinitialize ...
+        console.log(e)
+    }, false);
+
+    const SignalingChannel = function () {
+        this.send = function (data) {
+
+            $.ajax({
+                url: "/api/signaling/",
+                headers: {"X-CSRFToken": $.cookie("csrftoken"), 'Authorization': 'Token ' + $.cookie("userToken")},
+                data: {
+                    'data': data,
+                },
+                type: "POST",
+                success: function (data, textStatus, jqXHR) {
+                    console.log('message sent');
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log('signaling failed')
+                }
+            });
+
+
+        };
+
+        this.onmessage = function (message) {
+            console.log('message received!!! : ' + message)
+        };
+    };
+
+    const signaling = new SignalingChannel();
+    signaling.send('this is a data')
+
+    // const pc = new RTCPeerConnection();
+
+
+    // function gotStream(stream) {
+    //     let video = document.querySelector('video');
+    //
+    //     //insert stream into the video tag
+    //     video.src = window.URL.createObjectURL(stream);
+    //
+    //
+    //     pc.onaddstream(stream);
+    //     pc.createOffer(function (offer) {
+    //         pc.setLocalDescription(offer);
+    //         SignalingChannel.send(offer.sdp)
+    //     })
+    // }
+    //
+    // pc.onicecandidate = function (event) {
+    //     if (event.candidate) {
+    //         SignalingChannel.send(event.candidate)
+    //     }
+    // };
+    //
+    // SignalingChannel.onmessage = function (message) {
+    //     if (message.candidate) {
+    //         pc.addIceCandidate(message.candidate)
+    //     }
+    // };
+    //
+    // pc.onconnectionstatechange = function (event) {
+    //     console.log("conn state change : " + event.target.iceConnectionState)
+    // };
+    //
+    // function hasUserMedia() {
+    //     navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia
+    //         || navigator.mozGetUserMedia || navigator.msGetUserMedia;
+    //     return !!navigator.getUserMedia;
+    // }
+    //
+    // if (hasUserMedia()) {
+    //     navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia
+    //         || navigator.mozGetUserMedia || navigator.msGetUserMedia;
+    //
+    //     //get both video and audio streams from user's camera
+    //     navigator.getUserMedia({video: true}, gotStream, function () {
+    //         console.log('error getting stram')
+    //     });
+    //
+    // } else {
+    //     alert("Error. WebRTC is not supported!");
+    // }
+
+
+</script>
+</body>
+</html>
