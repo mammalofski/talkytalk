@@ -22,7 +22,7 @@
                 data: {
                     to: 'callee',
                     room: window.location.pathname.split('/')[2],
-                    data: data
+                    data: JSON.stringify(data)
                 },
                 type: "POST",
                 success: function (data, textStatus, jqXHR) {
@@ -67,7 +67,7 @@
     });
 
     let remoteView = document.getElementById('remove-video');
-    let selfView = document.getElementById('local-video');
+    let selfView = document.getElementById('self-video');
     const constraints = {audio: true, video: true};
     const configuration = {iceServers: [{urls: 'stuns:stun.example.org'}]};
     const pc = new RTCPeerConnection();
@@ -113,8 +113,10 @@
         let json = JSON.parse(message.data);
         if (message.data == "null")
             return;
-        const desc = json.data.desc;
-        const candidate = json.data.candidate;
+        json = JSON.parse(json);
+        console.log(json);
+        const desc = json.desc;
+        const candidate = json.candidate;
                 console.log(json);
         console.log(desc);
         console.log(candidate);

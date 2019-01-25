@@ -150,12 +150,15 @@ class Signaling(generics.CreateAPIView):
     def create(self, request, *args, **kwargs):
         print("__________________signaling request___________________")
         data = request.data
+        # print('sending data', data)
 
-        print('sending signal to {}'.format(data.get('to')), data.get('username'))
         room = models.Room.objects.get(room_id=request.data.get('room'))
         for user in room.participants.all():
             if user != request.user:
                 caller = user
+
+        # print('sending signal to room {} which is {}'.format(room.room_id, data.get('to')), caller.emai)
+        # print('the data is', data.get('data'))
         send_event(caller.email, 'message', data.get('data'))
 
         # if data.get('to') == 'callee':
