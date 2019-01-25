@@ -90,6 +90,8 @@
 <script>
     var csrf_val = document.cookie.split('csrftoken=')[1];
 
+
+
     var registerFunc = function () {
         var email = $('#register_email').val();
         var password1 = $('#register_pass_1').val();
@@ -128,6 +130,7 @@
                 var minutes = 3000;
                 date.setTime(date.getTime() + (minutes * 60 * 1000));
                 $.cookie("userToken", data.key, {expires: date, path: '/'});
+                window.location.href = window.location.origin + "/rooms/"
             }, error: function (err) {
                 $('#login_error')[0].innerText = "ERROR In Login...";
             }

@@ -301,6 +301,9 @@
 </body>
 <script>
 
+    if (!$.cookie("userToken"))
+        window.location.href = window.location.origin + "/userAuth/";
+
     $(".write_msg").keyup(function (event) {
         if (event.keyCode === 13) {
             if (!$(".write_msg").val().length)

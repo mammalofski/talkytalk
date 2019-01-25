@@ -105,6 +105,11 @@
 
 </body>
 <script>
+
+    if (!$.cookie("userToken"))
+        window.location.href = window.location.origin + "/userAuth/";
+
+
     var es = new EventSource('/events/?channel=navid');
 
     es.addEventListener('message', function (e) {
@@ -125,13 +130,15 @@
         success: function (data, textStatus, jqXHR) {
             // generate rooms elements
             data.map((room) =>
-                $('tbody')[0].innerHTML += `<tr><td>${room.room_id}</td><td>${room.status}</td></tr>`
+                $('tbody')[0].innerHTML += `<tr><td><a href="/rooms/${room.room_id}/callee">${room.room_id}</a></td><td>${room.status}</td></tr>`
             )
         },
         error: function (jqXHR, textStatus, errorThrown) {
             console.log('error')
         }
     });
+
+    const goToChatRoom = (room_id) => window.location.href = window.location.origin + "/rooms/${room_id}/callee";
 
     const createRoom = () => {
         let inputElement = document.getElementById("create-room-input");
@@ -146,7 +153,7 @@
             type: "POST",
             success: function (data, textStatus, jqXHR) {
                 // generate rooms elements
-                $('tbody')[0].innerHTML += `<tr><td>${data.room_id}</td><td>${data.status}</td></tr>`;
+                $('tbody')[0].innerHTML += `<tr onclick="goToChatRoom(${data.room_id})"><td><a></a>${data.room_id}</td><td>${data.status}</td></tr>`;
                 inputElement.value = null;
                 button.css('background-color', '#3c763d');
                 button.css('color', 'white');
@@ -179,12 +186,14 @@
             },
             type: "POST",
             success: function (data, textStatus, jqXHR) {
-                inputElement.value = null;
+
                 button.css('background-color', '#3c763d');
                 button.css('color', 'white');
                 setTimeout(() => {
                     button.css('background-color', '#ffffff');
                     button.css('color', 'black');
+                    window.location.href = window.location.origin + '/rooms/' + inputElement.value + "/caller";
+                    inputElement.value = null;
                 }, 1000)
 
             },
