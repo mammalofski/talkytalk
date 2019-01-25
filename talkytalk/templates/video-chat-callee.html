@@ -80,7 +80,12 @@
     const pc = new RTCPeerConnection();
 
     // send any ice candidates to the other peer
-    pc.onicecandidate = ({candidate}) => signaling.send({candidate: candidate});
+    pc.onicecandidate = ({candidate}) => {
+        if (pc.iceGatheringState == "complete")
+            signaling.send({
+                candidate: candidate
+            });
+    };
 
     // let the "negotiationneeded" event trigger offer generation
     pc.onnegotiationneeded = async () => {
