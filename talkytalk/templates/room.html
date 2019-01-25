@@ -92,7 +92,7 @@
 
 </body>
 <script>
-    var es = new EventSource('/events/');
+    var es = new EventSource('/events/?channel=navid');
 
     es.addEventListener('message', function (e) {
         console.log(e.data);

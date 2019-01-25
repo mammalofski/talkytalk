@@ -10,16 +10,9 @@
 <body>
 <video autoplay></video>
 <script>
-    var es = new EventSource('/events/');
 
-    es.addEventListener('message', function (e) {
-        console.log(e.data);
-    }, false);
 
-    es.addEventListener('stream-reset', function (e) {
-        // ... client fell behind, reinitialize ...
-        console.log(e)
-    }, false);
+
 
     const SignalingChannel = function () {
         this.send = function (data) {
@@ -48,11 +41,34 @@
     };
 
     const signaling = new SignalingChannel();
-    signaling.send('this is a data')
+    signaling.send({
+        'data': 'this is data',
+        'room': window.location.pathname.split('/')[2]
+    });
+
+    $.ajax({
+        url: "/api/getUser/",
+        headers: {"X-CSRFToken": $.cookie("csrftoken"), 'Authorization': 'Token ' + $.cookie("userToken")},
+        type: "GET",
+        success: function (data, textStatus, jqXHR) {
+
+            var es = new EventSource('/events/?channel=' + data[0].email);
+
+            es.addEventListener('message', signaling.onmessage, false);
+
+            es.addEventListener('stream-reset', function (e) {
+                // ... client fell behind, reinitialize ...
+                console.log(e);
+            }, false);
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.log('signaling failed')
+        }
+    });
 
     // const pc = new RTCPeerConnection();
-
-
+    //
+    //
     // function gotStream(stream) {
     //     let video = document.querySelector('video');
     //
@@ -60,20 +76,28 @@
     //     video.src = window.URL.createObjectURL(stream);
     //
     //
-    //     pc.onaddstream(stream);
+    //     pc.addStream(stream);
     //     pc.createOffer(function (offer) {
     //         pc.setLocalDescription(offer);
-    //         SignalingChannel.send(offer.sdp)
+    //         signaling.send({
+    //             'data': offer.sdp,
+    //             'room': window.location.pathname.split('/')[2]
+    //         })
     //     })
     // }
     //
     // pc.onicecandidate = function (event) {
     //     if (event.candidate) {
-    //         SignalingChannel.send(event.candidate)
+    //         signaling.send({
+    //             'data': event.candidate,
+    //             'room': window.location.pathname.split('/')[2]
+    //         })
     //     }
     // };
     //
-    // SignalingChannel.onmessage = function (message) {
+    // signaling.onmessage = function (message) {
+    //     console.log('on callee signaling onmessage');
+    //     console.log(message);
     //     if (message.candidate) {
     //         pc.addIceCandidate(message.candidate)
     //     }

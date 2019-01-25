@@ -32,7 +32,7 @@ urlpatterns = [
     path('chats/', TemplateView.as_view(template_name='chats.html')),
     path('admin/', admin.site.urls),
     path('api/', include(('talk_app.urls', 'talk_app'), namespace='talk_app')),
-    path('events/', include(django_eventstream.urls), {'channels': ['testChannel']}),
+    path('events/', include(django_eventstream.urls)),
     # REST AUTH
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('rest-auth/', include('rest_auth.urls')),

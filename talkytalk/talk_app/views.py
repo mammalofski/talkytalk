@@ -31,7 +31,7 @@ class ListCreateRoom(generics.ListCreateAPIView):
         # then add the callee himself/herself to participants
         room.participants.add(self.request.user.id)
         serializer = self.serializer_class(room)
-        send_event('test', 'message', {'text': 'SSE Channel With Client for CreateRoom'})
+        # send_event('navid', 'message', {'text': 'SSE Channel With Client for CreateRoom'})
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
@@ -59,7 +59,7 @@ class JoinRoom(generics.CreateAPIView):
         room.save()
         # serialize the data
         serializer = self.serializer_class(room)
-        send_event('test', 'message', {'text': 'SSE Channel With Client for JoinRoom'})
+        # send_event('test', 'message', {'text': 'SSE Channel With Client for JoinRoom'})
         return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
 
 
@@ -70,6 +70,9 @@ class ListCreateContact(generics.ListCreateAPIView):
     def get_queryset(self):
         print('user:+++++++++++++++', self.request.user)
         return models.Contact.objects.filter(owner=self.request.user)
+
+
+
 
     def create(self, request, *args, **kwargs):
         user = get_object_or_404(models.TalkyTalkUser, email=request.data.get('contact'))
@@ -146,7 +149,11 @@ class Signaling(generics.CreateAPIView):
 
     def create(self, request, *args, **kwargs):
         print("__________________signaling request___________________")
-        print(request.data)
+        print(request.data.get('data[room]'))
+        room = models.Room.objects.get(room_id=request.data.get('data[room]'))
+        room_owner = room.callee.email
+        print(room_owner)
         # get the room id and counterpart user and send the sdp to him via sse
+        send_event(room_owner, 'message', {'text': 'SSE Channel With Client for CreateRoom'})
         return HttpResponse("signaling received")
 
