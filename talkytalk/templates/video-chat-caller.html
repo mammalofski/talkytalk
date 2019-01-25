@@ -71,7 +71,7 @@
 
     // send any ice candidates to the other peer
     pc.onicecandidate = ({candidate}) => {
-        if (pc.iceGatheringState == "complete")
+        // if (pc.iceGatheringState == "complete")
             signaling.send({
                 candidate: candidate
             });
