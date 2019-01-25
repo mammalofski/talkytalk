@@ -112,9 +112,12 @@
         console.log(message);
         let json = JSON.parse(message.data);
         if (message.data == "null")
-            return
+            return;
         const desc = json.data.desc;
         const candidate = json.data.candidate;
+                console.log(json);
+        console.log(desc);
+        console.log(candidate);
 
         try {
             if (desc) {

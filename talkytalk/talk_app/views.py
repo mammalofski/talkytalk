@@ -151,21 +151,28 @@ class Signaling(generics.CreateAPIView):
         print("__________________signaling request___________________")
         data = request.data
 
-        if data.get('to') == 'callee':
-            print('sending to room', request.data.get('room'))
-            room = models.Room.objects.get(room_id=request.data.get('room'))
-            room_owner = room.callee.email
-            print('sending signal to callee', room_owner)
-            # get the room id and counterpart user and send the sdp to him via sse
-            send_event(room_owner, 'message', {'data': data.get('data'), 'from': request.user.email})
+        print('sending signal to {}'.format(data.get('to')), data.get('username'))
+        room = models.Room.objects.get(room_id=request.data.get('room'))
+        for user in room.participants.all():
+            if user != request.user:
+                caller = user
+        send_event(caller.email, 'message', data.get('data'))
 
-        elif data.get('to') == 'caller':
-            print('sending signal to callee', data.get('username'))
-            room = models.Room.objects.get(room_id=request.data.get('room'))
-            for user in room.participants.all():
-                if user != request.user:
-                    caller = user
-            send_event(caller.email, 'message', data.get('data'))
+        # if data.get('to') == 'callee':
+        #     print('sending to room', request.data.get('room'))
+        #     room = models.Room.objects.get(room_id=request.data.get('room'))
+        #     room_owner = room.callee.email
+        #     print('sending signal to callee', room_owner)
+        #     # get the room id and counterpart user and send the sdp to him via sse
+        #     send_event(room_owner, 'message', {'data': data.get('data'), 'from': request.user.email})
+        #
+        # elif data.get('to') == 'caller':
+        #     print('sending signal to callee', data.get('username'))
+        #     room = models.Room.objects.get(room_id=request.data.get('room'))
+        #     for user in room.participants.all():
+        #         if user != request.user:
+        #             caller = user
+        #     send_event(caller.email, 'message', data.get('data'))
 
         return HttpResponse("signaling received")
 

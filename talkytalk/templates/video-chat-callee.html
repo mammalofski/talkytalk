@@ -41,9 +41,9 @@
         this.onmessage = function (message) {
             console.log('message received!!! : ');
             // callerUsername = message
-            let json = JSON.parse(message.data);
+            // let json = JSON.parse(message.data);
             console.log(message);
-            console.log(json);
+            // console.log(json);
         };
     };
 
@@ -116,10 +116,13 @@
 
     signaling.onmessage = async (message) => {
         // {desc, candidate};
+        console.log(message);
         let json = JSON.parse(message.data);
-        const desc = message.data.desc;
-        const candidate = message.data.candidate;
-        console.log(json);
+        if (message.data == "null")
+            return;
+        const desc = json.data.desc;
+        const candidate = json.data.candidate;
+                console.log(json);
         console.log(desc);
         console.log(candidate);
 
