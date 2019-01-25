@@ -157,7 +157,7 @@ class Signaling(generics.CreateAPIView):
             room_owner = room.callee.email
             print('sending signal to callee', room_owner)
             # get the room id and counterpart user and send the sdp to him via sse
-            send_event(room_owner, 'message', data.get('data'))
+            send_event(room_owner, 'message', {'data': data.get('data'), 'from': request.user.email})
 
         elif data.get('to') == 'caller':
             print('sending signal to callee', data.get('username'))

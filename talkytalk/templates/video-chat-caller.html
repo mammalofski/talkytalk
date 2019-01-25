@@ -17,7 +17,11 @@
             $.ajax({
                 url: "/api/signaling/",
                 headers: {"X-CSRFToken": $.cookie("csrftoken"), 'Authorization': 'Token ' + $.cookie("userToken")},
-                data: data,
+                data: {
+                    to: 'callee',
+                    room: window.location.pathname.split('/')[2],
+                    data: data
+                },
                 type: "POST",
                 success: function (data, textStatus, jqXHR) {
                     console.log('message sent');
@@ -37,11 +41,7 @@
     };
 
     const signaling = new SignalingChannel();
-    signaling.send({
-        to: 'callee',
-        room: window.location.pathname.split('/')[2],
-        data: 'this is some data containing in this place'
-    });
+    signaling.send('this is some data containing in this place');
 
     $.ajax({
         url: "/api/getUser/",

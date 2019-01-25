@@ -11,13 +11,18 @@
 <video autoplay id="self-video"></video>
 <video autoplay id="remote-video"></video>
 <script>
+    var callerUsername;
     const SignalingChannel = function () {
         this.send = function (data) {
 
             $.ajax({
                 url: "/api/signaling/",
                 headers: {"X-CSRFToken": $.cookie("csrftoken"), 'Authorization': 'Token ' + $.cookie("userToken")},
-                data: data,
+                data: {
+                    to: 'caller',
+                    username: callerUsername,
+                    data: data
+                },
                 type: "POST",
                 success: function (data, textStatus, jqXHR) {
                     console.log('message sent');
@@ -32,16 +37,16 @@
 
         this.onmessage = function (message) {
             console.log('message received!!! : ');
+            // callerUsername = message
+            let json = JSON.parse(message.data);
             console.log(message);
+            console.log(json);
+            callerUsername = json.from;
         };
     };
 
     const signaling = new SignalingChannel();
-    signaling.send({
-        to: 'caller',
-        username: 'ali@ab.com',
-        data: 'this is some data from caller to callee'
-    });
+    signaling.send('this is some data from caller to callee');
 
     $.ajax({
         url: "/api/getUser/",
