@@ -149,11 +149,19 @@ class Signaling(generics.CreateAPIView):
 
     def create(self, request, *args, **kwargs):
         print("__________________signaling request___________________")
-        print(request.data.get('data[room]'))
-        room = models.Room.objects.get(room_id=request.data.get('data[room]'))
-        room_owner = room.callee.email
-        print(room_owner)
-        # get the room id and counterpart user and send the sdp to him via sse
-        send_event(room_owner, 'message', {'text': 'SSE Channel With Client for CreateRoom'})
+        data = request.data
+
+        if data.get('to') == 'callee':
+            print('sending to room', request.data.get('room'))
+            room = models.Room.objects.get(room_id=request.data.get('room'))
+            room_owner = room.callee.email
+            print('sending signal to callee', room_owner)
+            # get the room id and counterpart user and send the sdp to him via sse
+            send_event(room_owner, 'message', data.get('data'))
+
+        elif data.get('to') == 'caller':
+            print('sending signal to callee', data.get('username'))
+            send_event(data.get('username'), 'message', data.get('data'))
+
         return HttpResponse("signaling received")
 
