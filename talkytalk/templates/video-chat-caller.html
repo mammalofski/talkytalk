@@ -104,6 +104,13 @@
         }
     }
 
+    async function fun() {
+        const stream = await navigator.mediaDevices.getUserMedia(constraints);
+        stream.getTracks().forEach((track) => pc.addTrack(track, stream));
+        await pc.setLocalDescription(await pc.createAnswer());
+        signaling.send({desc: pc.localDescription});
+    }
+
     signaling.onmessage = async (message) => {
         console.log('in signaling onmessage');
         // {desc, candidate};
@@ -122,21 +129,18 @@
         try {
             if (desc) {
                 // if we get an offer, we need to reply with an answer
-                if (desc.type === 'offer') {
-                    await pc.setRemoteDescription(desc).then(function (e) {
-                        const stream =
-                            navigator.mediaDevices.getUserMedia(constraints);
-                        stream.getTracks().forEach((track) =>
-                            pc.addTrack(track, stream));
-                        pc.setLocalDescription(pc.createAnswer());
-                        signaling.send({desc: pc.localDescription});
-                    }, function (e) {
-                        console.log('sdfadfadsf')
-                    });
-                } else if (desc.type === 'answer') {
+                if (desc.type == 'offer') {
+                    pc.setRemoteDescription(desc)
+                        .then(() => pc.createAnswer())
+                        .then(answer => pc.setLocalDescription(answer))
+                        .then(() => {
+                            signaling.send({desc: pc.localDescription});
+                        })
+                        .catch(e => console.error(e));
+                } else if (desc.type == 'answer') {
                     await pc.setRemoteDescription(desc);
                 } else {
-                    console.log('Unsupported SDP type.');
+                    console.log('Unsupported SDP type. Your code may differ here.');
                 }
             } else if (candidate) {
                 await pc.addIceCandidate(candidate);
