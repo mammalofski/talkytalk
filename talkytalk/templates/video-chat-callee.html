@@ -33,13 +33,10 @@
 
 
         };
-
+        // default onmessage method
         this.onmessage = function (message) {
             console.log('message received!!! : ');
-            // callerUsername = message
-            // let json = JSON.parse(message.data);
             console.log(message);
-            // console.log(json);
         };
     };
 
@@ -47,6 +44,7 @@
         console.log('signaling state is ' + pc.signalingState);
     }
 
+    // create signaling channel
     const signaling = new SignalingChannel();
     // signaling.send('this is some data from caller to callee');
 
@@ -71,8 +69,6 @@
         }
     });
 
-    // handles JSON.stringify/parse
-    // const signaling = new SignalingChannel();
     let remoteView = document.getElementById('remote-video');
     let selfView = document.getElementById('self-video');
     const constraints = {audio: true, video: true};
@@ -125,18 +121,12 @@
 
     signaling.onmessage = async (message) => {
         console.log('in signaling onmessage');
-        // {desc, candidate};
-        // console.log(message);
         let json = JSON.parse(message.data);
         if (message.data == "null")
             return;
         json = JSON.parse(json);
-        // console.log(json);
         let desc = json.desc;
         let candidate = json.candidate;
-        // console.log(json);
-        // console.log('desc is ' + desc);
-        // console.log('candidate is ' + candidate);
 
         try {
             if (desc) {
