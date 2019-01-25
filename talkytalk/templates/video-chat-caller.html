@@ -13,6 +13,8 @@
 <script>
     const SignalingChannel = function () {
         this.send = function (data) {
+            console.log('sending following data to callee');
+            console.log(data);
 
             $.ajax({
                 url: "/api/signaling/",

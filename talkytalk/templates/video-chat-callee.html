@@ -15,6 +15,9 @@
     const SignalingChannel = function () {
         this.send = function (data) {
 
+            console.log('sending following data to caller');
+            console.log(data);
+
             $.ajax({
                 url: "/api/signaling/",
                 headers: {"X-CSRFToken": $.cookie("csrftoken"), 'Authorization': 'Token ' + $.cookie("userToken")},
@@ -118,6 +121,9 @@
         callerUsername = json.from;
         const desc = message.data.desc;
         const candidate = message.data.candidate;
+        console.log(json);
+        console.log(desc);
+        console.log(candidate);
 
         try {
             if (desc) {
