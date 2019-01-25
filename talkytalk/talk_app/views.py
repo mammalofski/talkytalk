@@ -161,7 +161,11 @@ class Signaling(generics.CreateAPIView):
 
         elif data.get('to') == 'caller':
             print('sending signal to callee', data.get('username'))
-            send_event(data.get('username'), 'message', data.get('data'))
+            room = models.Room.objects.get(room_id=request.data.get('room'))
+            for user in room.participants.all():
+                if user != request.user:
+                    caller = user
+            send_event(caller.email, 'message', data.get('data'))
 
         return HttpResponse("signaling received")
 

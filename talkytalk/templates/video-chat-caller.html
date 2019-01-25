@@ -109,10 +109,12 @@
 
     signaling.onmessage = async (message) => {
         // {desc, candidate};
+        console.log(message);
         let json = JSON.parse(message.data);
-        callerUsername = json.from;
-        const desc = message.data.desc;
-        const candidate = message.data.candidate;
+        if (message.data == "null")
+            return
+        const desc = json.data.desc;
+        const candidate = json.data.candidate;
 
         try {
             if (desc) {

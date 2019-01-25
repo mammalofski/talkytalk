@@ -23,7 +23,7 @@
                 headers: {"X-CSRFToken": $.cookie("csrftoken"), 'Authorization': 'Token ' + $.cookie("userToken")},
                 data: {
                     to: 'caller',
-                    username: callerUsername,
+                    room: window.location.pathname.split('/')[2],
                     data: data
                 },
                 type: "POST",
@@ -44,7 +44,6 @@
             let json = JSON.parse(message.data);
             console.log(message);
             console.log(json);
-            callerUsername = json.from;
         };
     };
 
@@ -118,7 +117,6 @@
     signaling.onmessage = async (message) => {
         // {desc, candidate};
         let json = JSON.parse(message.data);
-        callerUsername = json.from;
         const desc = message.data.desc;
         const candidate = message.data.candidate;
         console.log(json);
