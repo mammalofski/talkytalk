@@ -63,7 +63,7 @@
         }
     });
 
-    let remoteView = document.getElementById('remove-video');
+    let remoteView = document.getElementById('remote-video');
     let selfView = document.getElementById('self-video');
     const constraints = {audio: true, video: true};
     // const configuration = {iceServers: [{urls: 'stuns:stun.example.org'}]};
@@ -105,13 +105,18 @@
         try {
             // get local stream, show it in self-view and add it to be sent
             const stream =
-                await navigator.mediaDevices.getUserMedia({video: true});
+                await navigator.mediaDevices.getUserMedia(constraints);
             stream.getTracks().forEach((track) =>
                 pc.addTrack(track, stream));
             selfView.srcObject = stream;
         } catch (err) {
             console.error(err);
         }
+    }
+
+    function logSignalingState() {
+        console.log('signaling state is ' + pc.signalingState);
+        console.log('iceConnectionState is ' + pc.iceConnectionState);
     }
 
     signaling.onmessage = async (message) => {
@@ -133,16 +138,11 @@
             if (desc) {
                 // if we get an offer, we need to reply with an answer
                 if (desc.type == 'offer') {
-                    pc.setRemoteDescription(desc)
-                        // .then(() => navigator.mediaDevices.getUserMedia({video: true}).then(
-                        //     stream => stream.getTracks().forEach((track) => pc.addTrack(track, stream)
-                        //     )))
-                        .then(() => pc.createAnswer())
-                        .then(answer => pc.setLocalDescription(answer))
-                        .then(() => {
-                            signaling.send({desc: pc.localDescription});
-                        })
-                        .catch(e => console.error(e));
+                    await pc.setRemoteDescription(desc);
+                    const stream = await navigator.mediaDevices.getUserMedia(constraints);
+                    stream.getTracks().forEach((track) => pc.addTrack(track, stream));
+                    await pc.setLocalDescription(await pc.createAnswer());
+                    signaling.send({desc: pc.localDescription});
                 } else if (desc.type == 'answer') {
                     await pc.setRemoteDescription(desc);
                 } else {

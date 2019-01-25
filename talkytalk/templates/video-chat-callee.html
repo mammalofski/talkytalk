@@ -45,6 +45,7 @@
 
     function logSignalingState() {
         console.log('signaling state is ' + pc.signalingState);
+        console.log('iceConnectionState is ' + pc.iceConnectionState);
     }
 
     const signaling = new SignalingChannel();
@@ -114,7 +115,7 @@
         try {
             // get local stream, show it in self-view and add it to be sent
             const stream =
-                await navigator.mediaDevices.getUserMedia({audio: true});
+                await navigator.mediaDevices.getUserMedia(constraints);
             stream.getTracks().forEach((track) =>
                 pc.addTrack(track, stream));
             selfView.srcObject = stream;
@@ -142,17 +143,11 @@
             if (desc) {
                 // if we get an offer, we need to reply with an answer
                 if (desc.type == 'offer') {
-                    pc.setRemoteDescription(desc)
-                        // .then(() => navigator.mediaDevices.getUserMedia({video: true}).then(
-                        //     stream => stream.getTracks().forEach((track) => pc.addTrack(track, stream)
-                        //     )))
-
-                        .then(() => pc.createAnswer())
-                        .then(answer => pc.setLocalDescription(answer))
-                        .then(() => {
-                            signaling.send({desc: pc.localDescription});
-                        })
-                        .catch(e => console.error(e));
+                    await pc.setRemoteDescription(desc);
+                    const stream = await navigator.mediaDevices.getUserMedia(constraints);
+                    stream.getTracks().forEach((track) => pc.addTrack(track, stream));
+                    await pc.setLocalDescription(await pc.createAnswer());
+                    signaling.send({desc: pc.localDescription});
                 } else if (desc.type == 'answer') {
                     await pc.setRemoteDescription(desc);
                 } else {
