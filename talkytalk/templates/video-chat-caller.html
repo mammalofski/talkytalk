@@ -13,9 +13,6 @@
 <script>
     const SignalingChannel = function () {
         this.send = function (data) {
-            console.log('sending following data to callee');
-            console.log(data);
-
             $.ajax({
                 url: "/api/signaling/",
                 headers: {"X-CSRFToken": $.cookie("csrftoken"), 'Authorization': 'Token ' + $.cookie("userToken")},
@@ -108,30 +105,34 @@
     }
 
     signaling.onmessage = async (message) => {
+        console.log('in signaling onmessage');
         // {desc, candidate};
-        console.log(message);
+        // console.log(message);
         let json = JSON.parse(message.data);
         if (message.data == "null")
             return;
         json = JSON.parse(json);
+        // console.log(json);
+        let desc = json.desc;
+        let candidate = json.candidate;
         console.log(json);
-        const desc = json.desc;
-        const candidate = json.candidate;
-                console.log(json);
-        console.log(desc);
-        console.log(candidate);
+        // console.log('desc is ' + desc);
+        // console.log('candidate is ' + candidate);
 
         try {
             if (desc) {
                 // if we get an offer, we need to reply with an answer
                 if (desc.type === 'offer') {
-                    await pc.setRemoteDescription(desc);
-                    const stream =
-                        await navigator.mediaDevices.getUserMedia(constraints);
-                    stream.getTracks().forEach((track) =>
-                        pc.addTrack(track, stream));
-                    await pc.setLocalDescription(await pc.createAnswer());
-                    signaling.send({desc: pc.localDescription});
+                    await pc.setRemoteDescription(desc).then(function (e) {
+                        const stream =
+                            navigator.mediaDevices.getUserMedia(constraints);
+                        stream.getTracks().forEach((track) =>
+                            pc.addTrack(track, stream));
+                        pc.setLocalDescription(pc.createAnswer());
+                        signaling.send({desc: pc.localDescription});
+                    }, function (e) {
+                        console.log('sdfadfadsf')
+                    });
                 } else if (desc.type === 'answer') {
                     await pc.setRemoteDescription(desc);
                 } else {
