@@ -68,11 +68,7 @@ class ListCreateContact(generics.ListCreateAPIView):
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        print('user:+++++++++++++++', self.request.user)
         return models.Contact.objects.filter(owner=self.request.user)
-
-
-
 
     def create(self, request, *args, **kwargs):
         user = get_object_or_404(models.TalkyTalkUser, email=request.data.get('contact'))
@@ -131,51 +127,17 @@ class GetUserDetails(generics.ListAPIView):
         return models.TalkyTalkUser.objects.filter(id=self.request.user.id)
 
 
-# class Signaling(generics.GenericAPIView):
-#     # permission_classes = (IsAuthenticated,)
-#     def get_queryset(self):
-#         return models.Room.objects.all()
-#
-#     def post(self, request):
-#         print("__________________signaling request___________________")
-#         print(request.data)
-#         return HttpResponse("signaling received")
-
-
 class Signaling(generics.CreateAPIView):
     serializer_class = serializers.RoomSerializer
     queryset = models.Room.objects.all()
     permission_classes = (IsAuthenticated,)
 
     def create(self, request, *args, **kwargs):
-        print("__________________signaling request___________________")
         data = request.data
-        # print('sending data', data)
-
         room = models.Room.objects.get(room_id=request.data.get('room'))
         for user in room.participants.all():
             if user != request.user:
                 caller = user
 
-        # print('sending signal to room {} which is {}'.format(room.room_id, data.get('to')), caller.emai)
-        # print('the data is', data.get('data'))
         send_event(caller.email, 'message', data.get('data'))
-
-        # if data.get('to') == 'callee':
-        #     print('sending to room', request.data.get('room'))
-        #     room = models.Room.objects.get(room_id=request.data.get('room'))
-        #     room_owner = room.callee.email
-        #     print('sending signal to callee', room_owner)
-        #     # get the room id and counterpart user and send the sdp to him via sse
-        #     send_event(room_owner, 'message', {'data': data.get('data'), 'from': request.user.email})
-        #
-        # elif data.get('to') == 'caller':
-        #     print('sending signal to callee', data.get('username'))
-        #     room = models.Room.objects.get(room_id=request.data.get('room'))
-        #     for user in room.participants.all():
-        #         if user != request.user:
-        #             caller = user
-        #     send_event(caller.email, 'message', data.get('data'))
-
         return HttpResponse("signaling received")
-

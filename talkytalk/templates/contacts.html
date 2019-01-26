@@ -5,6 +5,17 @@
     <title>talky talk</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <style>
+        body {
+            background-color: #f5f5f5
+        }
+
+        .talkytalk-logo {
+            max-height: 60px;
+            display: block;
+            margin: 20px;
+            float: left;
+        }
+
         .table {
             text-align: center;
         }
@@ -13,8 +24,25 @@
             text-align: center;
         }
 
+        .panel-heading {
+            background-color: darkslategray !important;
+            color: white !important;
+        }
+
         .btn {
             transition: all 0.5s;
+        }
+
+        .logout-btn {
+            background-color: darkslategray!important;
+            margin: 10px;
+        }
+
+        .talkytalk-logo {
+            max-height: 40px;
+            display: block;
+            margin: 5px;
+            float: left;
         }
     </style>
 
@@ -23,18 +51,19 @@
 <nav class="navbar navbar-default">
     <div class="container-fluid">
         <div class="navbar-header">
-            <a class="navbar-brand" href="#">TalkyTalk</a>
+            <img src="/static/images/logo.jpg" class="talkytalk-logo">
         </div>
         <ul class="nav navbar-nav">
             <li><a href="/rooms">Rooms</a></li>
             <li class="active"><a href="/contacts">Contacts</a></li>
             <li><a href="/chats">Chats</a></li>
-            <li><a href="/userAuth">sign in/sign up</a></li>
+            <li><a onclick="logout()">Logout</a></li>
         </ul>
     </div>
 </nav>
+
 <div class="container">
-    <div class="row" style="margin-top: 100px">
+    <div class="row" >
         <div class="col-md-10 col-md-offset-1">
 
             <div class="panel panel-success">
@@ -107,8 +136,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
 </body>
 <script>
-    if (!$.cookie("userToken"))
-        window.location.href = window.location.origin + "/userAuth/";
     const csrf_val = document.cookie.split("csrftoken=")[1];
     // get the contacts
     $.ajax({
@@ -167,8 +194,11 @@
     $('#submitContact').click((e) => {
         e.preventDefault();
         submitContact();
-    })
-
+    });
+    var logout = function () {
+        $.removeCookie('userToken', {path: '/'});
+        window.location.href = '/userAuth'
+    }
 
 </script>
 </html>

@@ -9,6 +9,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
 
     <style>
+        body {
+            background-color:  #f5f5f5
+        }
+
         .panel-default > .panel-heading {
             color: #333;
             background-color: #a0c1ff;
@@ -19,22 +23,32 @@
             border-color: #a0c1ff;
         }
 
+        .talkytalk-logo {
+
+            max-height: 90px;
+            display: block;
+            margin: 20px auto;
+        }
+
+        .panel-body {
+            background-color: #cbdbf294;
+        }
+        .btn-primary, .btn-primary:hover, .btn-primary:active {
+            background-color: darkslategray;
+            border: none;
+            display: block;
+            margin: auto;
+        }
+
+        .panel-heading {
+            background-color: darkslategray!important;
+            color: white!important;
+        }
+
     </style>
 </head>
 <body>
-<nav class="navbar navbar-default">
-    <div class="container-fluid">
-        <div class="navbar-header">
-            <a class="navbar-brand" href="#">TalkyTalk</a>
-        </div>
-        <ul class="nav navbar-nav">
-            <li><a href="/rooms">Rooms</a></li>
-            <li><a href="/contacts">Contacts</a></li>
-            <li><a href="/chats">Chats</a></li>
-            <li class="active"><a href="/userAuth">sign in/sign up</a></li>
-        </ul>
-    </div>
-</nav>
+<img src="/static/images/logo.jpg" class="talkytalk-logo">
 <div class="container">
     <div class="row"  style="margin-top: 40px">
 
@@ -42,7 +56,7 @@
             <div class="panel panel-default">
                 <!-- Default panel contents -->
                 <div class="panel-heading">Login</div>
-                <div class="panel-body">
+                <div class="panel-body" style="height: 285px">
                     <div class="col-md-10 col-md-offset-1">
                         <p>email:</p>
                         <input name="email" class="form-control" type="text" id="login_email">
@@ -89,9 +103,9 @@
 </body>
 <script>
     var csrf_val = document.cookie.split('csrftoken=')[1];
-
-
-
+    if ($.cookie("userToken")) {
+        window.location.href = '/rooms'
+    }
     var registerFunc = function () {
         var email = $('#register_email').val();
         var password1 = $('#register_pass_1').val();
@@ -130,7 +144,7 @@
                 var minutes = 3000;
                 date.setTime(date.getTime() + (minutes * 60 * 1000));
                 $.cookie("userToken", data.key, {expires: date, path: '/'});
-                window.location.href = window.location.origin + "/rooms/"
+                window.location.href = '/rooms'
             }, error: function (err) {
                 $('#login_error')[0].innerText = "ERROR In Login...";
             }
