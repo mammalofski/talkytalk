@@ -373,7 +373,9 @@
             '                            </div>\n' +
             '                    </div>';
         $(".write_msg").val('');
-        ws.send('{"message": "' + message + '", "sender": 14}')
+        ws.send('{"message": "' + message + '", "sender": 14}');
+        var objDiv = document.getElementsByClassName("msg_history")[0];
+        objDiv.scrollTop = objDiv.scrollHeight;
     };
 
 
@@ -382,7 +384,8 @@
         var index = $('.chat_people').index(data);
         var contact_id = contacts_list[index].contact;
         getConversationHistory(contact_id);
-        ws = new WebSocket("ws://127.0.0.1:8002/ws/chat/" + contact_id + "/");
+        var host = window.location.host;
+        ws = new WebSocket("ws://"+ host + "/ws/chat/" + contact_id + "/");
         // Make it show an alert when a message is received
         ws.onmessage = function (message) {
             var message_json = JSON.parse(message.data).message;
