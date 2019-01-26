@@ -24,6 +24,7 @@ import talk_app.views as talkAppViews
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 urlpatterns = [
+    path('', TemplateView.as_view(template_name='auth.html')),
     path('userAuth/', TemplateView.as_view(template_name='auth.html')),
     path('contacts/', TemplateView.as_view(template_name='contacts.html')),
     path('rooms/', TemplateView.as_view(template_name='room.html')),

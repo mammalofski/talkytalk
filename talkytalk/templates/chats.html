@@ -412,6 +412,10 @@
             }
         });
     };
+    var logout = function () {
+        $.removeCookie('userToken', {path: '/'});
+        window.location.href = '/userAuth'
+    }
 
 </script>
 </html>

@@ -114,7 +114,7 @@
         try {
             // get local stream, show it in self-view and add it to be sent
             const stream =
-                await navigator.mediaDevices.getUserMedia({audio: true});
+                await navigator.mediaDevices.getUserMedia({audio: true, video: true});
             stream.getTracks().forEach((track) =>
                 pc.addTrack(track, stream));
             selfView.srcObject = stream;
@@ -125,8 +125,6 @@
 
     signaling.onmessage = async (message) => {
         console.log('in signaling onmessage');
-        // {desc, candidate};
-        // console.log(message);
         let json = JSON.parse(message.data);
         if (message.data == "null")
             return;
@@ -134,18 +132,20 @@
         // console.log(json);
         let desc = json.desc;
         let candidate = json.candidate;
-        // console.log(json);
-        // console.log('desc is ' + desc);
-        // console.log('candidate is ' + candidate);
 
-        try {
+       try {
             if (desc) {
                 // if we get an offer, we need to reply with an answer
                 if (desc.type == 'offer') {
                     pc.setRemoteDescription(desc)
-                        .then(() => navigator.mediaDevices.getUserMedia({audio: true}).then(
-                            stream => stream.getTracks().forEach((track) => pc.addTrack(track, stream)
-                            )))
+                        .then(() => navigator.mediaDevices.getUserMedia({audio: true, video: true})
+                            .then(
+                                stream => {
+                                    selfView.srcObject = stream;
+                                    stream.getTracks().forEach((track) => pc.addTrack(track, stream));
+                                }
+                            )
+                        )
 
                         .then(() => pc.createAnswer())
                         .then(answer => pc.setLocalDescription(answer))

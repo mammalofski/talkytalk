@@ -5,6 +5,17 @@
     <title>talky talk</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <style>
+        body {
+            background-color: #f5f5f5
+        }
+
+        .talkytalk-logo {
+            max-height: 60px;
+            display: block;
+            margin: 20px;
+            float: left;
+        }
+
         .table {
             text-align: center;
         }
@@ -13,13 +24,25 @@
             text-align: center;
         }
 
+        .panel-heading {
+            background-color: darkslategray !important;
+            color: white !important;
+        }
+
         .btn {
             transition: all 0.5s;
+        }
+
+        .logout-btn {
+            background-color: darkslategray!important;
+            margin: 10px;
         }
     </style>
 
 </head>
 <body>
+<img src="/static/images/logo.jpg" class="talkytalk-logo">
+<button class="btn btn-primary pull-right logout-btn" onclick="logout()">Logout</button>
 <div class="container">
     <div class="row" style="margin-top: 100px">
         <div class="col-md-10 col-md-offset-1">
@@ -152,8 +175,11 @@
     $('#submitContact').click((e) => {
         e.preventDefault();
         submitContact();
-    })
-
+    });
+    var logout = function () {
+        $.removeCookie('userToken', {path: '/'});
+        window.location.href = '/userAuth'
+    }
 
 </script>
 </html>

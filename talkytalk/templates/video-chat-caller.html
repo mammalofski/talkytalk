@@ -134,9 +134,6 @@
                 // if we get an offer, we need to reply with an answer
                 if (desc.type == 'offer') {
                     pc.setRemoteDescription(desc)
-                        // .then(() => navigator.mediaDevices.getUserMedia({video: true}).then(
-                        //     stream => stream.getTracks().forEach((track) => pc.addTrack(track, stream)
-                        //     )))
                         .then(() => pc.createAnswer())
                         .then(answer => pc.setLocalDescription(answer))
                         .then(() => {
