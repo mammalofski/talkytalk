@@ -8,6 +8,9 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
     <style>
+        body {
+            background-color:  #f5f5f5
+        }
         .table {
             text-align: center;
         }
@@ -19,10 +22,40 @@
         .btn {
             transition: all 0.5s;
         }
+
+        .panel-heading {
+            background-color: darkslategray!important;
+        }
+
+        .talkytalk-logo {
+            max-height: 40px;
+            display: block;
+            margin: 5px;
+            float: left;
+        }
+
+        .logout-btn {
+            background-color: darkslategray!important;
+            margin: 10px;
+        }
     </style>
 
 </head>
 <body>
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <img src="/static/images/logo.jpg" class="talkytalk-logo">
+        </div>
+        <ul class="nav navbar-nav">
+            <li class="active"><a href="/rooms">Rooms</a></li>
+            <li><a href="/contacts">Contacts</a></li>
+            <li><a href="/chats">Chats</a></li>
+            <li><a onclick="logout()">Logout</a></li>
+        </ul>
+    </div>
+</nav>
+
 <div class="container">
     <div class="row" style="margin-top: 100px">
         <div class="col-md-5 col-md-offset-1">
@@ -36,7 +69,7 @@
                             <button class="btn btn-default"
                                     id="create-room-button"
                                     onclick="createRoom()"
-                                    type="button">Create Room!</button>
+                                    type="button">Create Room</button>
                             </span>
                         <input type="text" id="create-room-input" class="form-control" placeholder="Room ID">
                     </div><!-- /input-group -->
@@ -92,7 +125,10 @@
 
 </body>
 <script>
-    var es = new EventSource('/events/');
+    if (!$.cookie("userToken")) {
+        window.location.href = '/userAuth'
+    }
+    var es = new EventSource('/events/?channel=navid');
 
     es.addEventListener('message', function (e) {
         console.log(e.data);
@@ -112,7 +148,7 @@
         success: function (data, textStatus, jqXHR) {
             // generate rooms elements
             data.map((room) =>
-                $('tbody')[0].innerHTML += `<tr><td>${room.room_id}</td><td>${room.status}</td></tr>`
+                $('tbody')[0].innerHTML += `<tr><td><a href="/rooms/${room.room_id}/callee">${room.room_id}</a></td><td>${room.status}</td></tr>`
             )
         },
         error: function (jqXHR, textStatus, errorThrown) {
@@ -120,8 +156,12 @@
         }
     });
 
+    const goToChatRoom = (room_id) => window.location.href = window.location.origin + "/rooms/${room_id}/callee";
+
     const createRoom = () => {
         let inputElement = document.getElementById("create-room-input");
+        if (!inputElement.value.length)
+            return;
         let button = $("#create-room-button");
         console.log($.cookie("userToken"));
         $.ajax({
@@ -133,7 +173,7 @@
             type: "POST",
             success: function (data, textStatus, jqXHR) {
                 // generate rooms elements
-                $('tbody')[0].innerHTML += `<tr><td>${data.room_id}</td><td>${data.status}</td></tr>`;
+                $('tbody')[0].innerHTML += `<tr><td><a onclick="goToChatRoom(${data.room_id})">${data.room_id}</a></td><td>${data.status}</td></tr>`;
                 inputElement.value = null;
                 button.css('background-color', '#3c763d');
                 button.css('color', 'white');
@@ -157,6 +197,8 @@
 
     const joinRoom = () => {
         let inputElement = document.getElementById("join-room-input");
+        if (!inputElement.value.length)
+            return;
         let button = $("#join-room-button");
         $.ajax({
             url: "/api/room/join",
@@ -166,19 +208,17 @@
             },
             type: "POST",
             success: function (data, textStatus, jqXHR) {
-                inputElement.value = null;
-                button.css('background-color', '#3c763d');
-                button.css('color', 'white');
-                setTimeout(() => {
-                    button.css('background-color', '#ffffff');
-                    button.css('color', 'black');
-                }, 1000)
-
+                window.location.href = '/rooms/' + inputElement.value + '/caller'
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 alert('please enter a valid room_id')
             }
         });
+    }
+
+    var logout = function () {
+        $.removeCookie('userToken', { path: '/' });
+        window.location.href = '/userAuth'
     }
 
 </script>

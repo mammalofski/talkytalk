@@ -24,13 +24,16 @@ import talk_app.views as talkAppViews
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 urlpatterns = [
+    path('', TemplateView.as_view(template_name='auth.html')),
     path('userAuth/', TemplateView.as_view(template_name='auth.html')),
     path('contacts/', TemplateView.as_view(template_name='contacts.html')),
     path('rooms/', TemplateView.as_view(template_name='room.html')),
+    path('rooms/<str:room_id>/callee/', TemplateView.as_view(template_name='video-chat-callee.html')),
+    path('rooms/<str:room_id>/caller/', TemplateView.as_view(template_name='video-chat-caller.html')),
     path('chats/', TemplateView.as_view(template_name='chats.html')),
     path('admin/', admin.site.urls),
     path('api/', include(('talk_app.urls', 'talk_app'), namespace='talk_app')),
-    path('events/', include(django_eventstream.urls), {'channels': ['testChannel']}),
+    path('events/', include(django_eventstream.urls)),
     # REST AUTH
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('rest-auth/', include('rest_auth.urls')),

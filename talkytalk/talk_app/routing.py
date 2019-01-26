@@ -22,6 +22,6 @@ websocket_urlpatterns = [
 urlpatterns = [
     url('events/', AuthMiddlewareStack(
         URLRouter(django_eventstream.routing.urlpatterns)
-    ), {'channels': ['test']}),
+    )),
     url('', AsgiHandler),
 ]

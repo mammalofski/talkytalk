@@ -2,9 +2,11 @@ from django.shortcuts import get_object_or_404
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from django_eventstream import send_event
 from django.db.models import Q
+from django.views.generic import View
+from django.http import HttpResponse
 
 from . import models
 from . import serializers
@@ -29,7 +31,7 @@ class ListCreateRoom(generics.ListCreateAPIView):
         # then add the callee himself/herself to participants
         room.participants.add(self.request.user.id)
         serializer = self.serializer_class(room)
-        send_event('test', 'message', {'text': 'SSE Channel With Client for CreateRoom'})
+        # send_event('navid', 'message', {'text': 'SSE Channel With Client for CreateRoom'})
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
@@ -57,7 +59,7 @@ class JoinRoom(generics.CreateAPIView):
         room.save()
         # serialize the data
         serializer = self.serializer_class(room)
-        send_event('test', 'message', {'text': 'SSE Channel With Client for JoinRoom'})
+        # send_event('test', 'message', {'text': 'SSE Channel With Client for JoinRoom'})
         return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
 
 
@@ -66,7 +68,6 @@ class ListCreateContact(generics.ListCreateAPIView):
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        print('user:+++++++++++++++', self.request.user)
         return models.Contact.objects.filter(owner=self.request.user)
 
     def create(self, request, *args, **kwargs):
@@ -124,3 +125,19 @@ class GetUserDetails(generics.ListAPIView):
 
     def get_queryset(self):
         return models.TalkyTalkUser.objects.filter(id=self.request.user.id)
+
+
+class Signaling(generics.CreateAPIView):
+    serializer_class = serializers.RoomSerializer
+    queryset = models.Room.objects.all()
+    permission_classes = (IsAuthenticated,)
+
+    def create(self, request, *args, **kwargs):
+        data = request.data
+        room = models.Room.objects.get(room_id=request.data.get('room'))
+        for user in room.participants.all():
+            if user != request.user:
+                caller = user
+
+        send_event(caller.email, 'message', data.get('data'))
+        return HttpResponse("signaling received")

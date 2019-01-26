@@ -9,4 +9,5 @@ urlpatterns = [
     path('contact', views.ListCreateContact.as_view(), name='list_contact'),
     path('contact/<int:pk>', views.RetrieveUpdateDestroyContact.as_view(), name='contact_detail'),
     path('message/', views.ListMessage.as_view(), name='list_message'),
+    path('signaling/', views.Signaling.as_view(), name='RTC_signaling')
 ]
