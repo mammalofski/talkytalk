@@ -18,7 +18,7 @@ django-channels==0.7.0
 django-eventstream==2.4.0
 django-grip==2.0.0
 django-rest-auth==0.9.3
-djangorestframework==3.8.2
+djangorestframework==3.11.2
 djangorestframework-jwt==1.11.0
 gripcontrol==3.3.0
 hiredis==0.3.0
